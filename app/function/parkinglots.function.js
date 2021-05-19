@@ -102,7 +102,7 @@ exports.check_slot = async (content, parkingID) => {
         
         for (j = 0; j < areaArray[i].slots.length; j++) {
 
-            if (areaArray[i].slots[j] == 0 && currentArray[i].slots[j] == 2) {
+            if (areaArray[i].slots[j] != 2 && currentArray[i].slots[j] == 2) {
                 areaArray[i].slots[j] = 2;
             }
 
