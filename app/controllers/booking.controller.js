@@ -2,10 +2,11 @@ const Booking = require('../models/booking.model.js');
 const bookingfunc = require('../function/booking.function.js');
 const User = require('../models/user.model.js');
 const Parkinglot = require('../models/parkinglot.model.js');
+const plfunc = require('../function/parkinglots.function.js');
 
 // Create and Save a new Booking
 exports.create = async (req, res) => {
-    
+
     var bookingID;
     // Validate request
     if (!req.body.userID) {
@@ -76,6 +77,36 @@ exports.create = async (req, res) => {
                     });
                 });
 
+            const result = await plfunc.cal_status_func(req.body.parkinglotID)
+           
+            content = {
+                $set: { "status": result }
+            }
+            console.log(content);
+            console.log(req.body.parkinglotID);
+
+            await Parkinglot.findOneAndUpdate({ _id: req.body.parkinglotID },
+                {$set: { "status": result }}, { new: true })
+
+                .then(parkinglot => {
+                    
+                    if (!parkinglot) {
+                        return res.status(404).send({
+                            message: "Parking Lot not found with id " + req.body.parkinglotID
+                        });
+                    }
+
+
+                }).catch(err => {
+                    if (err.kind === 'ObjectId') {
+                        return res.status(404).send({
+                            message: "Parking Lot not found with id " + req.body.parkinglotID
+                        });
+                    }
+                    return res.status(500).send({
+                        message: "Error updating Parking Lot with id " + req.body.parkinglotID
+                    });
+                });
         }
         else {
             res.status(500).send({
@@ -187,12 +218,14 @@ exports.delete = async (req, res) => {
             });
     }
 
+
+
 };
 
 // Complete Booking.
 exports.put = async (req, res) => {
 
-    let check_unbook = await bookingfunc.unbook_slot(req.params.bookingID);
+    let check_unbook = await bookingfunc.unbook_slot_done(req.params.bookingID);
 
     if (check_unbook) {
 
