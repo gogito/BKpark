@@ -1,7 +1,9 @@
 const Booking = require('../models/booking.model.js');
 const bookingfunc = require('../function/booking.function.js');
 const User = require('../models/user.model.js');
-// Create and Save a new ParkingLot
+const Parkinglot = require('../models/parkinglot.model.js');
+
+// Create and Save a new Booking
 exports.create = async (req, res) => {
     var bookingID;
     // Validate request
@@ -23,11 +25,11 @@ exports.create = async (req, res) => {
         });
     }
 
-   
+
     let check_avail = await bookingfunc.check_avail(req.body.parkinglotID, req.body.areaName);
 
-    if (check_avail > -1){
-    
+    if (check_avail > -1) {
+
         // Create a Booking
         const booking = new Booking({
             userID: req.body.userID,
@@ -40,7 +42,7 @@ exports.create = async (req, res) => {
         // Save Booking in the database
         await booking.save()
             .then(data => {
-                
+
                 bookingID = data._id;
                 res.send(data);
             }).catch(err => {
@@ -55,7 +57,7 @@ exports.create = async (req, res) => {
             message: "No booking slots available !!!"
         });
     }
-    
+
     User.findOneAndUpdate({ _id: req.body.userID },
         { $set: { "currentBooking": bookingID } }, { new: true })
         .then(user => {
@@ -64,7 +66,7 @@ exports.create = async (req, res) => {
                     message: "User not found with id " + req.params.userId
                 });
             }
-            
+
         }).catch(err => {
             if (err.kind === 'ObjectId') {
                 return res.status(404).send({
@@ -89,26 +91,32 @@ exports.findAll = (req, res) => {
         });
 };
 
-// Find a single booking with a UserId
-exports.findOne = (req, res) => {
-    Booking.findById(req.params.bookingId)
-        .then(booking => {
-            if (!booking) {
-                return res.status(404).send({
-                    message: "Booking not found with id " + req.params.bookingId
-                });
-            }
-            res.send(booking);
-        }).catch(err => {
-            if (err.kind === 'ObjectId') {
-                return res.status(404).send({
-                    message: "Booking not found with id " + req.params.bookingId
-                });
-            }
-            return res.status(500).send({
-                message: "Error retrieving Booking with id " + req.params.bookingId
-            });
-        });
+// Find a single booking with a BookingId
+exports.findOne = async (req, res) => {
+
+    let currentBooking = await Booking.findById(req.params.bookingId).lean()
+    let currentParkinglot = await Parkinglot.findById(currentBooking.parkinglotID)
+
+    currentBooking.ParkinglotName = currentParkinglot.name;
+
+    // .then(booking => {
+    //     if (!booking) {
+    //         return res.status(404).send({
+    //             message: "Booking not found with id " + req.params.bookingId
+    //         });
+    //     }
+    // }).catch(err => {
+    //     if (err.kind === 'ObjectId') {
+    //         return res.status(404).send({
+    //             message: "Booking not found with id " + req.params.bookingId
+    //         });
+    //     }
+    //     return res.status(500).send({
+    //         message: "Error retrieving Booking with id " + req.params.bookingId
+    //     });
+    // });
+    res.send(currentBooking);
+
 };
 
 // Cancel Booking.
@@ -126,7 +134,7 @@ exports.delete = async (req, res) => {
                         message: "Booking not found with id " + req.params.bookingID
                     });
                 }
-                
+
             }).catch(err => {
                 if (err.kind === 'ObjectId') {
                     return res.status(404).send({
@@ -146,7 +154,7 @@ exports.delete = async (req, res) => {
         booked_user_data.currentBooking = '';
 
         User.findOneAndUpdate({ _id: booking_data.userID },
-            { $set: {"currentBooking": booked_user_data.currentBooking, "failBooking": booked_user_data.failBooking} }, { new: true })
+            { $set: { "currentBooking": booked_user_data.currentBooking, "failBooking": booked_user_data.failBooking } }, { new: true })
             .then(user => {
                 if (!user) {
                     return res.status(404).send({
@@ -165,7 +173,7 @@ exports.delete = async (req, res) => {
                 });
             });
     }
-    
+
 };
 
 // Complete Booking.
@@ -183,7 +191,7 @@ exports.put = async (req, res) => {
                         message: "Booking not found with id " + req.params.bookingID
                     });
                 }
-                
+
             }).catch(err => {
                 if (err.kind === 'ObjectId') {
                     return res.status(404).send({
@@ -203,14 +211,14 @@ exports.put = async (req, res) => {
         booked_user_data.currentBooking = '';
 
         User.findOneAndUpdate({ _id: booking_data.userID },
-            { $set: {"currentBooking": booked_user_data.currentBooking, "successBooking": booked_user_data.successBooking} }, { new: true })
+            { $set: { "currentBooking": booked_user_data.currentBooking, "successBooking": booked_user_data.successBooking } }, { new: true })
             .then(user => {
                 if (!user) {
                     return res.status(404).send({
                         message: "User not found with id " + booking_data.userID
                     });
                 }
-                res.send(user);s
+                res.send(user);
             }).catch(err => {
                 if (err.kind === 'ObjectId') {
                     return res.status(404).send({
@@ -222,5 +230,5 @@ exports.put = async (req, res) => {
                 });
             });
     }
-    
+
 };
