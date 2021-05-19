@@ -70,7 +70,7 @@ exports.findAll = (req, res) => {
 // Update a ParkingLot identified by the parkingId in the request and status
 exports.update = async (req, res) => {
     // Find Parking Lot and update it with the request body
-    let content = "400";
+    let content =  await plfunc.check_slot(req.body.info, req.params.parkingId);
 
     if (req.body.infoArray !== undefined && req.body.info !== undefined) {
         content = {
@@ -174,6 +174,7 @@ exports.update = async (req, res) => {
 
 // Find a single Parking Lot with a parkingId
 exports.findOne = (req, res) => {
+    plfunc.check_slot()
     ParkingLot.findById(req.params.parkingId)
         .then(parkinglot => {
             if (!parkinglot) {

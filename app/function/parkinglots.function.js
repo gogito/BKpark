@@ -56,7 +56,7 @@ exports.cal_slot_func = async (id) => {
     var resultArray = [];
     var resultObjecta = 'a';
     var resultObject;
-    
+
     data = await ParkingLot.findById(id)
 
     data.area.forEach(Melement => {
@@ -66,22 +66,52 @@ exports.cal_slot_func = async (id) => {
 
     }
     )
-   
+
     resultArray.forEach(element => {
-        resultObjecta = resultObjecta + JSON.stringify(element)  + ','
+        resultObjecta = resultObjecta + JSON.stringify(element) + ','
     }
     )
-    
+
     resultObject = resultObjecta.slice(0, -1);
- 
+
     resultObject = resultObject.substring(1);
-    
+
     return resultObject;
 }
 
 exports.cal_slot_id_func = async (id) => {
     var Object;
     Object = await this.cal_slot_func(id);
-  
+
     return Object;
+}
+
+
+exports.check_slot = async (content, parkingID) => {
+
+    let areaArray = content.area;
+
+    let currentPL = await ParkingLot.findById(parkingID).lean();
+    let currentArray = currentPL.area;
+
+
+    console.log(areaArray);
+
+
+    for (i = 0; i < areaArray.length; i++) {
+        
+        for (j = 0; j < areaArray[i].slots.length; j++) {
+
+            if (areaArray[i].slots[j] == 0 && currentArray[i].slots[j] == 2) {
+                areaArray[i].slots[j] = 2;
+            }
+
+            
+        }
+
+    }
+    content.area = areaArray;
+    console.log(content.area)
+
+    return content;
 }

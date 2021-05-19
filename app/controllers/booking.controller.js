@@ -5,6 +5,7 @@ const Parkinglot = require('../models/parkinglot.model.js');
 
 // Create and Save a new Booking
 exports.create = async (req, res) => {
+    
     var bookingID;
     // Validate request
     if (!req.body.userID) {
@@ -26,57 +27,69 @@ exports.create = async (req, res) => {
     }
 
 
-    let check_avail = await bookingfunc.check_avail(req.body.parkinglotID, req.body.areaName);
 
-    if (check_avail > -1) {
+    let check_currentBooking = await bookingfunc.check_currentBooking(req.body.userID);
+    console.log(check_currentBooking);
 
-        // Create a Booking
-        const booking = new Booking({
-            userID: req.body.userID,
-            parkinglotID: req.body.parkinglotID,
-            areaName: req.body.areaName,
-            slot_id: check_avail,
-            status: "Booked"
-        });
+    if (check_currentBooking == 0) {
+        let check_avail = await bookingfunc.check_avail(req.body.parkinglotID, req.body.areaName);
+        if (check_avail > -1) {
 
-        // Save Booking in the database
-        await booking.save()
-            .then(data => {
-
-                bookingID = data._id;
-                res.send(data);
-            }).catch(err => {
-                res.status(500).send({
-                    message: err.message || "Some error occurred while creating the Booking."
-                });
+            // Create a Booking
+            const booking = new Booking({
+                userID: req.body.userID,
+                parkinglotID: req.body.parkinglotID,
+                areaName: req.body.areaName,
+                slot_id: check_avail,
+                status: "Booked"
             });
 
+            // Save Booking in the database
+            await booking.save()
+                .then(data => {
+
+                    bookingID = data._id;
+                    res.send(data);
+                }).catch(err => {
+                    res.status(500).send({
+                        message: err.message || "Some error occurred while creating the Booking."
+                    });
+                });
+
+            await User.findOneAndUpdate({ _id: req.body.userID },
+                { $set: { "currentBooking": bookingID } }, { new: true })
+                .then(user => {
+                    if (!user) {
+                        return res.status(404).send({
+                            message: "User not found with id " + req.params.userId
+                        });
+                    }
+
+                }).catch(err => {
+                    if (err.kind === 'ObjectId') {
+                        return res.status(404).send({
+                            message: "User not found with id " + req.params.userId
+                        });
+                    }
+                    return res.status(500).send({
+                        message: "Error updating user with id " + req.params.userId
+                    });
+                });
+
+        }
+        else {
+            res.status(500).send({
+                message: "No booking slots available !!!"
+            });
+        }
     }
     else {
         res.status(500).send({
-            message: "No booking slots available !!!"
+            message: "User already booked !!!"
         });
     }
 
-    User.findOneAndUpdate({ _id: req.body.userID },
-        { $set: { "currentBooking": bookingID } }, { new: true })
-        .then(user => {
-            if (!user) {
-                return res.status(404).send({
-                    message: "User not found with id " + req.params.userId
-                });
-            }
 
-        }).catch(err => {
-            if (err.kind === 'ObjectId') {
-                return res.status(404).send({
-                    message: "User not found with id " + req.params.userId
-                });
-            }
-            return res.status(500).send({
-                message: "Error updating user with id " + req.params.userId
-            });
-        });
 };
 
 // Retrieve and return all Booking from the database.

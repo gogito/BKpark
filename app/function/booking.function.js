@@ -2,7 +2,7 @@ const ParkingLot = require('../models/parkinglot.model.js');
 const User = require('../models/user.model.js');
 const Booking = require('../models/booking.model.js');
 const parkinglot = require('../controllers/parkinglot.controller.js');
-
+const parkingfunc = require('../function/parkinglots.function');
 exports.check_avail = async (parkingID, areaName) => {
 
     var data;
@@ -108,5 +108,18 @@ exports.unbook_slot = async (bookingID) => {
 
 
 
+
+}
+
+exports.check_currentBooking = async (userID) => {
+
+ currentUser = await User.findById(userID);
+ if (currentUser.currentBooking == ""){
+
+    return 0;
+
+ }
+
+else return 1;
 
 }
