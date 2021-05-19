@@ -30,7 +30,7 @@ exports.create = async (req, res) => {
 
 
     let check_currentBooking = await bookingfunc.check_currentBooking(req.body.userID);
-    console.log(check_currentBooking);
+   
 
     if (check_currentBooking == 0) {
         let check_avail = await bookingfunc.check_avail(req.body.parkinglotID, req.body.areaName);
@@ -78,13 +78,7 @@ exports.create = async (req, res) => {
                 });
 
             const result = await plfunc.cal_status_func(req.body.parkinglotID)
-           
-            content = {
-                $set: { "status": result }
-            }
-            console.log(content);
-            console.log(req.body.parkinglotID);
-
+        
             await Parkinglot.findOneAndUpdate({ _id: req.body.parkinglotID },
                 {$set: { "status": result }}, { new: true })
 
