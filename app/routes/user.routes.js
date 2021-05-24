@@ -35,9 +35,6 @@ module.exports = (app) => {
      *         password:
      *           type: string
      *           description: The user Password
-     *         userType:
-     *           type: string
-     *           description: The user userType
      *         personalID:
      *           type: string
      *           description: The user personalID
@@ -61,20 +58,21 @@ module.exports = (app) => {
      *           description: The user Fail Booking
      *         currentBooking:
      *           type: string
-     *           description: The user currentBooking      
+     *           description: The user currentBooking    
+     *        
      */
 
-    // Retrieve all Users
+
 
 
  /**
   * @swagger
   * tags:
   *   name: Users
-  *   description: The users managing API
+  *   description: The Users managing API
   */
 
-
+    // Retrieve all Users
 
 /**
  * @swagger
@@ -126,8 +124,87 @@ module.exports = (app) => {
     app.get('/users/:userId', users.findOne);
 
     // Update a User with userId
+
+/**
+ * @swagger
+ * /users/{id}:
+ *   put:
+ *     summary: Update the user by id
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The user id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             properties:
+ *              info:
+ *                type: object
+ *                description: Data NOT in an Array
+ *                properties:
+ *                  username:
+ *                    type: string
+ *                  password:
+ *                    type: string
+ *                  name:
+ *                    type: object
+ *                    properties:
+ *                      FName:
+ *                        type: string
+ *                      LName:
+ *                        type: string
+ *              infoArray:
+ *                type: object
+ *                description: Data in an Array
+ *                properties:
+ *                  carplateNumber:
+ *                    type: string
+ *     responses:
+ *       200:
+ *         description: The user description by id after update
+ *         contens:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       404:
+ *         description: The user was not found
+ */
+
+
+
+
     app.put('/users/:userId', users.update);
 
     // Delete a User with userId
+/**
+ * @swagger
+ * /users/{id}:
+ *   delete:
+ *     summary: Delete the user by id
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The user id
+ *     responses:
+ *       200:
+ *         description: User deleted successfully!
+ *         contens:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       404:
+ *         description: The user was not found
+ */
+
     app.delete('/users/:userId', users.delete);
 }

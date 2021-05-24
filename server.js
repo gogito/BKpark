@@ -3,13 +3,11 @@ const bodyParser = require('body-parser');
 const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 
-
 // create express app
 const app = express();
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }))
-
 
 app.use(function (req, res, next) {
 
@@ -20,7 +18,6 @@ app.use(function (req, res, next) {
 
     next();
 });
-
 
 // parse application/json
 app.use(bodyParser.json())
@@ -42,7 +39,7 @@ mongoose.connect(dbConfig.url, {
     process.exit();
 });
 
-// Extended: https://swagger.io/specification/#infoObject
+// Swagger API Doc
 const swaggerOptions = {
     swaggerDefinition: {
         openapi: "3.0.0",
@@ -53,7 +50,7 @@ const swaggerOptions = {
 		},
 		servers: [
 			{
-				url: "http://gogito.duckdns.org:3002",
+				url: "http://bkparking.ddns.net:3002",
 			},
 		],
 	},
@@ -63,20 +60,30 @@ const swaggerOptions = {
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-
-
-require('./app/routes/note.routes.js')(app);
+// User Route
 require('./app/routes/user.routes.js')(app);
 require('./app/routes/register.routes.js')(app);
 require('./app/routes/login.routes.js')(app);
+
+// Parking Lot Route
+require('./app/routes/parkinglot.routes.js')(app);
+
+// Booking Route
+require('./app/routes/booking.routes.js')(app);
+
+// Other Route
+require('./app/routes/note.routes.js')(app);
+require('./app/routes/test.routes.js')(app);
+require('./app/routes/other.routes.js')(app);
+
+// Admin Route
+require('./app/routes/admin.routes.js')(app);
+require('./app/routes/admin_login.routes.js')(app);
+require('./app/routes/admin_register.routes.js')(app);
+
+// Owner Route
 require('./app/routes/ownerlogin.routes.js')(app);
 require('./app/routes/owner.routes.js')(app);
-require('./app/routes/parkinglot.routes.js')(app);
-require('./app/routes/booking.routes.js')(app);
-require('./app/routes/other.routes.js')(app);
-require('./app/routes/test.routes.js')(app);
-require('./app/routes/admin_register.routes.js')(app);
-require('./app/routes/admin.routes.js')(app);
 
 // listen for requests
 app.listen(3002, () => {

@@ -1,5 +1,5 @@
 module.exports = (app) => {
-    const admin_register = require('../controllers/admin_register.controller.js');
+    const login = require('../controllers/admin_login.controller.js');
  /**
      * @swagger
      * components:
@@ -32,50 +32,39 @@ module.exports = (app) => {
      *         password:
      *           type: string
      *           description: The admin Password
-     *        
+     *          
      *        
      */
 
 
-
-
-    // Register a new admin
+    // Retrieve a single Admin with username and password
 
 /**
  * @swagger
- * /admin_register:
+ * /admin_login:
  *   post:
- *     summary: Add a new Admin
+ *     summary: Admin Login
  *     tags: [Admins]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             properties:
- *              name:
- *                type: object
- *                properties:
- *                  FName:
- *                    type: string
- *                  LName:
- *                    type: string
+ *             properties:            
  *              username:
  *                type: string
  *              password:
  *                type: string
- *              email:
- *                type: string
  *     responses:
  *       200:
- *         description: The admin description by id after created
+ *         description: The admin description by id after login
  *         contens:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Admin'
  *       404:
- *         description: Could not create Admin
- */
-    // Add a new admin
-    app.post('/admin_register', admin_register.create);
+ *         description: Could not find Admin with matching Username and Password
+ */   
+
+    app.post('/admin_login', login.findOne);
 }

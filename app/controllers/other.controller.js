@@ -34,7 +34,7 @@ exports.routing = async (req, res) => {
 };
 
 exports.search = async (req, res) => {
-    console.log("test");
+
     var returnData;
     var uri = 'https://nominatim.openstreetmap.org/search?q=' +
     req.params.keyword +

@@ -41,7 +41,8 @@ exports.create = (req, res) => {
             latitude: req.body.coordinate.latitude,
             longitude: req.body.coordinate.longitude
         },
-        status: req.body.status
+        status: req.body.status,
+        area: req.body.area
     });
 
     // Save ParkingLot in the database
@@ -174,7 +175,6 @@ exports.update = async (req, res) => {
 
 // Find a single Parking Lot with a parkingId
 exports.findOne = (req, res) => {
-    plfunc.check_slot()
     ParkingLot.findById(req.params.parkingId)
         .then(parkinglot => {
             if (!parkinglot) {

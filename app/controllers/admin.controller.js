@@ -12,29 +12,29 @@ exports.findAll = (req, res) => {
         });
 };
 
-// Find a single admin with a AdminId
+// Find a single admin with a UserId
 exports.findOne = (req, res) => {
-    Admin.findById(req.params.adminId)
+    Admin.findById(req.params.userId)
         .then(admin => {
             if (!admin) {
                 return res.status(404).send({
-                    message: "Admin not found with id " + req.params.adminId
+                    message: "Admin not found with id " + req.params.userId
                 });
             }
             res.send(admin);
         }).catch(err => {
             if (err.kind === 'ObjectId') {
                 return res.status(404).send({
-                    message: "Admin not found with id " + req.params.adminId
+                    message: "Admin not found with id " + req.params.userId
                 });
             }
             return res.status(500).send({
-                message: "Error retrieving admin with id " + req.params.adminId
+                message: "Error retrieving admin with id " + req.params.userId
             });
         });
 };
 
-// Update a admin identified by the adminId in the request
+// Update a admin identified by the userId in the request
 exports.update = (req, res) => {
     // Find admin and update it with the request body
     let content = "400";
@@ -50,45 +50,45 @@ exports.update = (req, res) => {
         }
     }
 
-    Admin.findOneAndUpdate({ _id: req.params.adminId },
+    Admin.findOneAndUpdate({ _id: req.params.userId },
         content, { new: true })
         .then(admin => {
             if (!admin) {
                 return res.status(404).send({
-                    message: "Admin not found with id " + req.params.adminId
+                    message: "Admin not found with id " + req.params.userId
                 });
             }
             res.send(admin);
         }).catch(err => {
             if (err.kind === 'ObjectId') {
                 return res.status(404).send({
-                    message: "Admin not found with id " + req.params.adminId
+                    message: "Admin not found with id " + req.params.userId
                 });
             }
             return res.status(500).send({
-                message: "Error updating admin with id " + req.params.adminId
+                message: "Error updating admin with id " + req.params.userId
             });
         });
 };
 
-// Delete a admin with the specified adminId in the request
+// Delete a admin with the specified userId in the request
 exports.delete = (req, res) => {
-    Admin.findByIdAndRemove(req.params.adminId)
+    Admin.findByIdAndRemove(req.params.userId)
         .then(admin => {
             if (!admin) {
                 return res.status(404).send({
-                    message: "Admin not found with id " + req.params.adminId
+                    message: "Admin not found with id " + req.params.userId
                 });
             }
             res.send({ message: "Admin deleted successfully!" });
         }).catch(err => {
             if (err.kind === 'ObjectId' || err.name === 'NotFound') {
                 return res.status(404).send({
-                    message: "Admin not found with id " + req.params.adminId
+                    message: "Admin not found with id " + req.params.userId
                 });
             }
             return res.status(500).send({
-                message: "Could not delete admin with id " + req.params.adminId
+                message: "Could not delete admin with id " + req.params.userId
             });
         });
 };

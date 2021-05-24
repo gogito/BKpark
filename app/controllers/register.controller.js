@@ -32,11 +32,7 @@ exports.create = (req, res) => {
         });
     }
 
-    if(!req.body.userType) {
-        return res.status(400).send({
-            message: "userType can not be empty"
-        });
-    }
+    
 
     if(!req.body.personalID) {
         return res.status(400).send({
@@ -54,7 +50,8 @@ exports.create = (req, res) => {
         },
         email: req.body.email,
         personalID: req.body.personalID,
-        userType: req.body.userType
+        userType: "Customer",
+        currentBooking: ""
     });
 
     // Save User in the database
