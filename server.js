@@ -75,6 +75,8 @@ require('./app/routes/parkinglot.routes.js')(app);
 require('./app/routes/booking.routes.js')(app);
 require('./app/routes/other.routes.js')(app);
 require('./app/routes/test.routes.js')(app);
+require('./app/routes/admin_register.routes.js')(app);
+require('./app/routes/admin.routes.js')(app);
 
 // listen for requests
 app.listen(3002, () => {
