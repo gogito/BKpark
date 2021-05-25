@@ -11,7 +11,7 @@ module.exports = (app) => {
 
 /**
  * @swagger
- * /other/routing/{curLong}/{curLat}/{desLat}/{desLong}:
+ * /other/routing/{curLong}/{curLat}/{desLong}/{desLat}:
  *   get:
  *     summary: Get routing with Coordinate
  *     tags: [Other]
