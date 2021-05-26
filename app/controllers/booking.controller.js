@@ -118,15 +118,19 @@ exports.create = async (req, res) => {
 };
 
 // Retrieve and return all Booking from the database.
-exports.findAll = (req, res) => {
-    Booking.find()
-        .then(bookings => {
-            res.send(bookings);
-        }).catch(err => {
-            res.status(500).send({
-                message: err.message || "Some error occurred while retrieving Bookings."
-            });
-        });
+exports.findAll = async (req, res) => {
+  
+  let bookingArray =  await Booking.find().lean();
+        // .then(bookings => {
+        //     // res.send(bookings);
+        // }).catch(err => {
+        //     res.status(500).send({
+        //         message: err.message || "Some error occurred while retrieving Bookings."
+        //     });
+        // });
+        let finalArray = await bookingfunc.getName(bookingArray);
+        console.log(finalArray);
+        res.send(finalArray);
 };
 
 // Find a single booking with a BookingId

@@ -95,7 +95,7 @@ exports.unbook_slot = async (bookingID) => {
                     });
                 });
 
-           
+
             const result = await plfunc.cal_status_func(parkingID)
 
             content = {
@@ -147,7 +147,7 @@ exports.unbook_slot_done = async (bookingID) => {
 
 
             data.area[i].slots[slot_id] = 1;
-            
+
 
             await ParkingLot.findOneAndUpdate({ _id: parkingID },
                 { $set: { "area": data.area } }, { new: true })
@@ -169,7 +169,7 @@ exports.unbook_slot_done = async (bookingID) => {
                     });
                 });
 
-            
+
             const result = await plfunc.cal_status_func(parkingID)
 
             content = {
@@ -216,4 +216,43 @@ exports.check_currentBooking = async (userID) => {
 
     else return 1;
 
+}
+
+exports.getName = async (bookingArray) => {
+
+    var completeArray;
+    let parkinglotIDArray = [];
+    let userIDArray = [];
+    for (let i = 0; i < bookingArray.length; i++) {
+
+        parkinglotIDArray.push(bookingArray[i].parkinglotID);
+        userIDArray.push(bookingArray[i].userID);
+
+    }
+
+    var promise1 = ParkingLot.find({ _id: { $in: parkinglotIDArray } }).exec();
+    var promise2 = User.find({ _id: { $in: userIDArray } }).exec();
+
+    await Promise.all([promise1, promise2]).then(function (value) {
+        let arrayOfParkinglot = value[0];
+        let arrayOfUser = value[1];
+        for (let i = 0; i < bookingArray.length; i++) {
+            for (let j = 0; j < arrayOfParkinglot.length; j++) {
+                for (let z = 0; z < arrayOfUser.length; z++) {
+                    if (bookingArray[i].parkinglotID == arrayOfParkinglot[j]._id) {
+                        bookingArray[i].parkinglotName = arrayOfParkinglot[j].name;
+                    }
+                    if (bookingArray[i].userID == arrayOfUser[z]._id) {
+                        bookingArray[i].userName = arrayOfUser[z].name;
+                    }
+                }
+            }
+        }
+
+        
+    });
+
+    completeArray = bookingArray;
+        // console.log(completeArray);
+        return completeArray;
 }
