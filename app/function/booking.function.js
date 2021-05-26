@@ -234,6 +234,7 @@ exports.getName = async (bookingArray) => {
     var promise2 = User.find({ _id: { $in: userIDArray } }).exec();
 
     await Promise.all([promise1, promise2]).then(function (value) {
+
         let arrayOfParkinglot = value[0];
         let arrayOfUser = value[1];
         for (let i = 0; i < bookingArray.length; i++) {
@@ -256,3 +257,4 @@ exports.getName = async (bookingArray) => {
         // console.log(completeArray);
         return completeArray;
 }
+

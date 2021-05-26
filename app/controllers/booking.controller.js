@@ -129,7 +129,6 @@ exports.findAll = async (req, res) => {
         //     });
         // });
         let finalArray = await bookingfunc.getName(bookingArray);
-        console.log(finalArray);
         res.send(finalArray);
 };
 
