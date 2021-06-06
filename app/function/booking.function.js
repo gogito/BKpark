@@ -57,14 +57,19 @@ exports.check_avail = async (parkingID, areaName) => {
 
 exports.unbook_slot = async (bookingID) => {
 
+    
 
     booking_data = await Booking.findById(bookingID);
 
+    if (booking_data.status == "Booked") {
+    
     let parkingID = booking_data.parkinglotID;
     let areaName = booking_data.areaName;
     let slot_id = booking_data.slot_id;
 
     data = await ParkingLot.findById(parkingID);
+
+    
 
     for (let i = 0; i < data.area.length; i++) {
 
@@ -122,6 +127,9 @@ exports.unbook_slot = async (bookingID) => {
                         message: "Error updating Parking Lot with id " + parkingID
                     });
                 });
+
+            }
+            
             return true;
 
         }
@@ -250,11 +258,40 @@ exports.getName = async (bookingArray) => {
             }
         }
 
-        
+
     });
 
     completeArray = bookingArray;
-        // console.log(completeArray);
-        return completeArray;
+    // console.log(completeArray);
+    return completeArray;
 }
+
+exports.findBookingByParking = async (parkingID) => {
+    var bookingID_array;
+    var promise1 = Booking.find({ parkinglotID: parkingID, status: "Booked" }).exec();
+    await Promise.all([promise1]).then(function (value) {
+        bookingID_array = value[0];
+    });
+
+    return bookingID_array;
+}
+
+exports.findBookingByUser = async (userID) => {
+    var bookingID_array;
+    var promise1 = Booking.find({ userID: userID}).exec();
+    await Promise.all([promise1]).then(function (value) {
+        bookingID_array = value[0];
+    });
+
+    return bookingID_array;
+}
+
+exports.unbook_slot_multi = async (bookingID_array) => {
+    for (let i = 0; i < bookingID_array.length; i++) {
+
+        this.unbook_slot(bookingID_array[i])
+
+    }
+}
+
 

@@ -9,7 +9,8 @@ const ParkingLotSchema = new Schema({
     name: { type: String, unique: true, required: true },
     status: { type: String, required: true },
     area: [],
-    image: { type: String}
+    image: { type: String},
+    deleted: { type: String}
 },
     {
         versionKey: false

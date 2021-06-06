@@ -245,4 +245,34 @@ module.exports = (app) => {
  */
 
     app.get('/parkinglots/:parkingId', parkinglots.findOne);
+
+
+    // Delete a single Parking Lot with parkingId
+
+/**
+ * @swagger
+ * /parkinglots/{id}:
+ *   delete:
+ *     summary: Delete the parkinglot by id
+ *     tags: [Parkinglots]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The parkinglot id
+ *     responses:
+ *       200:
+ *         description: The parkinglot description by id
+ *         contens:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Parkinglot'
+ *       404:
+ *         description: The parkinglot was not found
+ */
+
+
+app.delete('/parkinglots/:parkingId', parkinglots.delete);
 }

@@ -1,4 +1,6 @@
 const User = require('../models/user.model.js');
+const bookingfunc = require('../function/booking.function.js');
+const Booking = require('../models/booking.model.js');
 
 // Retrieve and return all users from the database.
 exports.findAll = (req, res) => {
@@ -78,7 +80,7 @@ exports.update = (req, res) => {
 };
 
 // Delete a user with the specified userId in the request
-exports.delete = (req, res) => {
+exports.delete = async (req, res) => {
     User.findByIdAndRemove(req.params.userId)
         .then(user => {
             if (!user) {
@@ -86,7 +88,7 @@ exports.delete = (req, res) => {
                     message: "User not found with id " + req.params.userId
                 });
             }
-            res.send({ message: "User deleted successfully!" });
+            
         }).catch(err => {
             if (err.kind === 'ObjectId' || err.name === 'NotFound') {
                 return res.status(404).send({
@@ -97,4 +99,22 @@ exports.delete = (req, res) => {
                 message: "Could not delete user with id " + req.params.userId
             });
         });
+
+    var bookingID_array = [];
+    var return_array = [];
+
+    let booking_array = await bookingfunc.findBookingByUser(req.params.userId);
+
+    for (let i = 0; i < booking_array.length; i++) {
+        bookingID_array[i] = booking_array[i]._id;
+    }
+
+    var promise1 = Booking.deleteMany({ _id: { $in: bookingID_array } }).exec();
+    
+    await Promise.all([promise1]).then(function (value) {
+        return_array = value[0];
+    });   
+
+
+    res.send("Deleted User and Booking");
 };
