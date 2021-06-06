@@ -33,6 +33,12 @@ exports.create = (req, res) => {
         });
     }
 
+    if (!req.body.ownerID) {
+        return res.status(400).send({
+            message: "Parking Lot OwnerID can not be empty"
+        });
+    }
+
     // Create a Parking Lot
     const parkinglot = new ParkingLot({
         name: req.body.name,
@@ -42,7 +48,8 @@ exports.create = (req, res) => {
             longitude: req.body.coordinate.longitude
         },
         status: req.body.status,
-        area: req.body.area
+        area: req.body.area,
+        ownerID: req.body.ownerID
     });
 
     // Save ParkingLot in the database

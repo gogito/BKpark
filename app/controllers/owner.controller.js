@@ -32,12 +32,6 @@ exports.create = (req, res) => {
         });
     }
 
-    if (!req.body.personalID) {
-        return res.status(400).send({
-            message: "personalID can not be empty"
-        });
-    }
-
     // Create an owner
     const owner = new Owner({
         username: req.body.username,
@@ -47,7 +41,8 @@ exports.create = (req, res) => {
             LName: req.body.name.LName
         },
         email: req.body.email,
-        personalID: req.body.personalID
+        userType: "Owner",
+        ownedParking: []
     });
 
     // Save owner in the database
@@ -96,9 +91,9 @@ exports.findOne = (req, res) => {
         });
 };
 
-// Update a user identified by the userId in the request
+// Update a owner identified by the ownerId in the request
 exports.update = (req, res) => {
-    // Find user and update it with the request body
+    // Find owner and update it with the request body
     let content = "400";
     if (req.body.infoArray !== undefined && req.body.info !== undefined) {
         content = {

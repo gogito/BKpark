@@ -36,6 +36,9 @@ module.exports = (app) => {
      *         image:
      *           type: string
      *           description: The Parkinglot Image
+     *         ownerID:
+     *           type: string
+     *           description: The Parkinglot OwnerID
      *         area:
      *           type: array
      *           items:
