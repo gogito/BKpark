@@ -1,4 +1,5 @@
 const ParkingLot = require('../models/parkinglot.model.js');
+const Owner = require('../models/owner.model.js');
 
 
 exports.cal_status_func = async (id) => {
@@ -99,14 +100,14 @@ exports.check_slot = async (content, parkingID) => {
 
 
     for (i = 0; i < areaArray.length; i++) {
-        
+
         for (j = 0; j < areaArray[i].slots.length; j++) {
 
             if (areaArray[i].slots[j] != 2 && currentArray[i].slots[j] == 2) {
                 areaArray[i].slots[j] = 2;
             }
 
-            
+
         }
 
     }
@@ -114,4 +115,17 @@ exports.check_slot = async (content, parkingID) => {
     console.log(content.area)
 
     return content;
+}
+
+exports.link_parkinglot_owner = async (parkingID, ownerID) => {
+    
+    let content = {
+        $addToSet: {
+            "ownedParking": parkingID
+        }
+    }
+
+    await Owner.findOneAndUpdate({ _id: ownerID },
+        content, { new: true })
+
 }

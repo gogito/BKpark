@@ -52,15 +52,22 @@ exports.create = (req, res) => {
         ownerID: req.body.ownerID
     });
 
+
+
+
     // Save ParkingLot in the database
     parkinglot.save()
         .then(data => {
+            plfunc.link_parkinglot_owner(parkinglot._id, req.body.ownerID);
             res.send(data);
         }).catch(err => {
             res.status(500).send({
                 message: err.message || "Some error occurred while creating the ParkingLot."
             });
         });
+
+        
+
 };
 
 // Retrieve and return all Parking from the database.

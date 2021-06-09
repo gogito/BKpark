@@ -136,7 +136,7 @@ module.exports = (app) => {
  *         contens:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Ownerr'
+ *               $ref: '#/components/schemas/Owner'
  *       404:
  *         description: The owner was not found
  */
