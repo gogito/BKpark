@@ -255,7 +255,7 @@ exports.delete = async (req, res) => {
 
 // Find all Booking from a Parking Lot with parkingId
 exports.get_booking_from_parking = async (req, res) => {
-
+    
     let booking_array = await bookingfunc.findBookingByParking_all(req.params.parkingId);
     let result_array = await bookingfunc.getName(booking_array);
     
