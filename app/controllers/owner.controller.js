@@ -165,7 +165,7 @@ exports.delete = (req, res) => {
         });
 };
 
-// Find Booking by Owner ID
+// Find Booking by Owner ID old
 // exports.find_booking_by_ownerID = async (req, res) => {
 
     
@@ -211,6 +211,6 @@ exports.find_parking_by_ownerID = async (req, res) => {
     let parking_array = result.ownedParking;
 
     complete_array = await Parkinglot.find({ '_id': { $in:parking_array} }).lean().exec();
-    
+
     res.send(complete_array);
 }
