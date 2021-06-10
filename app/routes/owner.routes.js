@@ -255,4 +255,32 @@ module.exports = (app) => {
  */
  app.get('/owners/:ownerId/booking', owners.find_booking_by_ownerID);
 
+
+
+    // Find all parking from ownerID
+/**
+ * @swagger
+ * /owners/{id}/parking:
+ *   get:
+ *     summary: Find all parking from ownerID
+ *     tags: [Owners]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The owner id
+ *     responses:
+ *       200:
+ *         description: Parkinglot detail
+ *         contens:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Parkinglot'
+ *       404:
+ *         description: The owner was not found
+ */
+ app.get('/owners/:ownerId/parking', owners.find_parking_by_ownerID);
+
 }

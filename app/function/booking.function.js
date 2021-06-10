@@ -286,6 +286,16 @@ exports.findBookingByParking_all = async (parkingID) => {
     return bookingID_array;
 }
 
+exports.findBookingByParking_all_array = async (parkingID_array) => {
+    var bookingID_array;
+    var promise1 = Booking.find({ 'parkinglotID': { $in:parkingID_array}}).lean().exec();
+    await Promise.all([promise1]).then(function (value) {
+        bookingID_array = value[0];
+    });
+
+    return bookingID_array;
+}
+
 exports.findBookingByUser = async (userID) => {
 
     var bookingID_array;

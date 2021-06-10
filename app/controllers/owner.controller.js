@@ -1,4 +1,5 @@
 const Owner = require('../models/owner.model.js');
+const Parkinglot = require('../models/parkinglot.model.js');
 const Parkinglot_control = require('../controllers/parkinglot.controller');
 const bookingfunc = require('../function/booking.function.js');
 // Create and Save a new owner
@@ -165,25 +166,51 @@ exports.delete = (req, res) => {
 };
 
 // Find Booking by Owner ID
+// exports.find_booking_by_ownerID = async (req, res) => {
+
+    
+//     var complete_array = [];
+//     let result = await Owner.findById(req.params.ownerId).lean();
+//     let parking_array = result.ownedParking;
+
+//     for (let i = 0; i < parking_array.length; i++) {
+
+//         let booking_array = await bookingfunc.findBookingByParking_all(parking_array[i]);
+        
+//         let new_array = await bookingfunc.getName(booking_array);
+        
+//         complete_array = complete_array.concat(new_array);
+       
+//     }
+
+   
+
+//     res.send(complete_array);
+// };
+
 exports.find_booking_by_ownerID = async (req, res) => {
 
-    var result_array = [];
     var complete_array = [];
     let result = await Owner.findById(req.params.ownerId).lean();
     let parking_array = result.ownedParking;
 
-    for (let i = 0; i < parking_array.length; i++) {
-
-        let booking_array = await bookingfunc.findBookingByParking_all(parking_array[i]);
+        let booking_array = await bookingfunc.findBookingByParking_all_array(parking_array);
+        
         let new_array = await bookingfunc.getName(booking_array);
-        complete_array = result_array.concat(new_array);
-    }
-
-   
-
+        
+        complete_array = new_array;
+       
     res.send(complete_array);
-
-
-
-
 };
+
+// Find Parkinglot by Owner ID
+exports.find_parking_by_ownerID = async (req, res) => {
+
+    var complete_array = [];
+    let result = await Owner.findById(req.params.ownerId).lean();
+    let parking_array = result.ownedParking;
+
+    complete_array = await Parkinglot.find({ '_id': { $in:parking_array} }).lean().exec();
+    
+    res.send(complete_array);
+}
