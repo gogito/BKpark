@@ -277,5 +277,36 @@ module.exports = (app) => {
  */
 
 
+
 app.delete('/parkinglots/:parkingId', parkinglots.delete);
+
+
+    // Find all Booking from a Parking Lot with parkingId
+
+/**
+ * @swagger
+ * /parkinglots/{id}/booking:
+ *   get:
+ *     summary: Find all Booking from a Parking Lot with parkingId
+ *     tags: [Parkinglots]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The parkinglot id
+ *     responses:
+ *       200:
+ *         description: The booking detail description by id
+ *         contens:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Booking'
+ *       404:
+ *         description: The parkinglot was not found
+ */
+
+ app.get('/parkinglots/:parkingId/booking', parkinglots.get_booking_from_parking);
+ 
 }

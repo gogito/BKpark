@@ -9,6 +9,7 @@ const OwnerSchema = new Schema({
     username: { type: String, unique: true, required: true },
     password: { type: String, required: true },
     userType: { type: String, default: "Owner"},
+    personalID: { type: String, required: true, unique: true },
     ownedParking: [{type: String}]
 }, {
     versionKey: false

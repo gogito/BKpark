@@ -201,7 +201,7 @@ module.exports = (app) => {
 
 
 
-    // Delete a User with userId
+    // Delete a owner with ownerId
 /**
  * @swagger
  * /owners/{id}:
@@ -226,5 +226,33 @@ module.exports = (app) => {
  *         description: The owner was not found
  */
     app.delete('/owners/:ownerId', owners.delete);
+
+
+
+    // Find all booking from ownerID
+/**
+ * @swagger
+ * /owners/{id}/booking:
+ *   get:
+ *     summary: Find all booking from ownerID
+ *     tags: [Owners]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The owner id
+ *     responses:
+ *       200:
+ *         description: Booking detail
+ *         contens:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Booking'
+ *       404:
+ *         description: The owner was not found
+ */
+ app.get('/owners/:ownerId/booking', owners.find_booking_by_ownerID);
 
 }

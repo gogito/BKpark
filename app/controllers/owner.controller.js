@@ -1,5 +1,6 @@
 const Owner = require('../models/owner.model.js');
-
+const Parkinglot_control = require('../controllers/parkinglot.controller');
+const bookingfunc = require('../function/booking.function.js');
 // Create and Save a new owner
 exports.create = (req, res) => {
     // Validate request
@@ -32,6 +33,12 @@ exports.create = (req, res) => {
         });
     }
 
+    if (!req.body.personalID) {
+        return res.status(400).send({
+            message: "PersonalID can not be empty"
+        });
+    }
+
     // Create an owner
     const owner = new Owner({
         username: req.body.username,
@@ -41,6 +48,7 @@ exports.create = (req, res) => {
             LName: req.body.name.LName
         },
         email: req.body.email,
+        personalID: { type: String, required: true, unique: true },
         userType: "Owner",
         ownedParking: []
     });
@@ -154,4 +162,28 @@ exports.delete = (req, res) => {
                 message: "Could not delete owner with id " + req.params.ownerId
             });
         });
+};
+
+// Find Booking by Owner ID
+exports.find_booking_by_ownerID = async (req, res) => {
+
+    var result_array = [];
+    var complete_array = [];
+    let result = await Owner.findById(req.params.ownerId).lean();
+    let parking_array = result.ownedParking;
+
+    for (let i = 0; i < parking_array.length; i++) {
+
+        let booking_array = await bookingfunc.findBookingByParking_all(parking_array[i]);
+        let new_array = await bookingfunc.getName(booking_array);
+        complete_array = result_array.concat(new_array);
+    }
+
+   
+
+    res.send(complete_array);
+
+
+
+
 };

@@ -1,6 +1,8 @@
 const ParkingLot = require('../models/parkinglot.model.js');
 const plfunc = require('../function/parkinglots.function.js');
 const bookingfunc = require('../function/booking.function.js');
+
+
 // Create and Save a new ParkingLot
 exports.create = (req, res) => {
     // Validate request
@@ -247,5 +249,17 @@ exports.delete = async (req, res) => {
             });
         });
 
+
+};
+
+
+// Find all Booking from a Parking Lot with parkingId
+exports.get_booking_from_parking = async (req, res) => {
+
+    let booking_array = await bookingfunc.findBookingByParking_all(req.params.parkingId);
+    let result_array = await bookingfunc.getName(booking_array);
+    
+    // console.log(result_array);
+    res.send(result_array);
 
 };

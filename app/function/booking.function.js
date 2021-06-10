@@ -258,11 +258,11 @@ exports.getName = async (bookingArray) => {
             }
         }
 
-
+        
     });
 
     completeArray = bookingArray;
-    // console.log(completeArray);
+  
     return completeArray;
 }
 
@@ -276,9 +276,9 @@ exports.findBookingByParking = async (parkingID) => {
     return bookingID_array;
 }
 
-exports.findBookingByUser = async (userID) => {
+exports.findBookingByParking_all = async (parkingID) => {
     var bookingID_array;
-    var promise1 = Booking.find({ userID: userID}).exec();
+    var promise1 = Booking.find({ parkinglotID: parkingID}).lean().exec();
     await Promise.all([promise1]).then(function (value) {
         bookingID_array = value[0];
     });
@@ -286,12 +286,23 @@ exports.findBookingByUser = async (userID) => {
     return bookingID_array;
 }
 
+exports.findBookingByUser = async (userID) => {
+
+    var bookingID_array;
+    var promise1 = Booking.find({ userID: userID}).exec();
+    await Promise.all([promise1]).then(function (value) {
+        bookingID_array = value[0];
+    });
+
+    return bookingID_array;
+    
+}
+
 exports.unbook_slot_multi = async (bookingID_array) => {
+    
     for (let i = 0; i < bookingID_array.length; i++) {
 
         this.unbook_slot(bookingID_array[i])
 
     }
 }
-
-
