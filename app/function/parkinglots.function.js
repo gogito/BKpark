@@ -96,8 +96,6 @@ exports.check_slot = async (content, parkingID) => {
     let currentArray = currentPL.area;
 
 
-    console.log(areaArray);
-
 
     for (i = 0; i < areaArray.length; i++) {
 
@@ -112,13 +110,13 @@ exports.check_slot = async (content, parkingID) => {
 
     }
     content.area = areaArray;
-    console.log(content.area)
+
 
     return content;
 }
 
 exports.link_parkinglot_owner = async (parkingID, ownerID) => {
-    
+
     let content = {
         $addToSet: {
             "ownedParking": parkingID
@@ -128,4 +126,26 @@ exports.link_parkinglot_owner = async (parkingID, ownerID) => {
     await Owner.findOneAndUpdate({ _id: ownerID },
         content, { new: true })
 
+}
+
+exports.check_slot_single = async (content, parkingID) => {
+    
+    let currentPL = await ParkingLot.findById(parkingID).lean();
+
+    for (i = 0; i < currentPL.area.length; i++) {
+      
+        if (content.area.name == currentPL.area[i].name) {
+           
+            for (j = 0; j < content.area.slots.length; j++) {
+                if (content.area.slots[j] != 2 && currentPL.area[i].slots[j] == 2) {
+                    content.area.slots[j] = 2;
+                }
+
+            }
+
+        }
+
+    }
+
+    return content;
 }

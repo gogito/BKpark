@@ -14,6 +14,7 @@ module.exports = (app) => {
      *         - password
      *         - userType
      *         - ownedParking
+     *         - personalID
      *       properties:
      *         _id:
      *           type: string
@@ -29,6 +30,9 @@ module.exports = (app) => {
      *         email:
      *           type: string
      *           description: The owner Email
+     *         personalID:
+     *           type: string
+     *           description: The owner Personal ID
      *         username:
      *           type: string
      *           description: The owner Username
@@ -80,6 +84,8 @@ module.exports = (app) => {
  *              password:
  *                type: string
  *              email:
+ *                type: string
+ *              personalID:
  *                type: string
  *     responses:
  *       200:

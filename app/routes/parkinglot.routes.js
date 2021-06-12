@@ -309,4 +309,98 @@ app.delete('/parkinglots/:parkingId', parkinglots.delete);
 
  app.get('/parkinglots/:parkingId/booking', parkinglots.get_booking_from_parking);
  
+
+    // Add area in a Parkinglot with ParkingId
+
+/**
+ * @swagger
+ * /parkinglots/{id}/area:
+ *   put:
+ *     summary: Add area in a Parkinglot with ParkingId
+ *     tags: [Parkinglots]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The Parkinglot id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             properties:
+ *                    area:
+ *                      type: object
+ *                      properties:
+ *                        name:
+ *                          type: string
+ *                        price:
+ *                          type: string
+ *                        slots:
+ *                          type: array
+ *                          items:
+ *                            type: integer
+ *                 
+ *     responses:
+ *       200:
+ *         description: The Parkinglot description by id after update
+ *         contens:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Parkinglot'
+ *       404:
+ *         description: The Parkinglot was not found
+ */
+
+
+ app.put('/parkinglots/:parkingId/area', parkinglots.addArea);
+
+
+    // Update area SLOT in a Parkinglot with ParkingId
+
+/**
+ * @swagger
+ * /parkinglots/{id}/area/slot:
+ *   put:
+ *     summary: Update area SLOT in a Parkinglot with ParkingId
+ *     tags: [Parkinglots]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The Parkinglot id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             properties:
+ *                    area:
+ *                      type: object
+ *                      properties:
+ *                        name:
+ *                          type: string
+ *                        slots:
+ *                          type: array
+ *                          items:
+ *                            type: integer
+ *      
+ *     responses:
+ *       200:
+ *         description: The Parkinglot description by id after update
+ *         contens:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Parkinglot'
+ *       404:
+ *         description: The Parkinglot was not found
+ */
+
+
+ app.put('/parkinglots/:parkingId/area/slot', parkinglots.updateAreaSlot);
+
 }

@@ -49,7 +49,7 @@ exports.create = (req, res) => {
             LName: req.body.name.LName
         },
         email: req.body.email,
-        personalID: { type: String, required: true, unique: true },
+        personalID: req.body.personalID,
         userType: "Owner",
         ownedParking: []
     });
