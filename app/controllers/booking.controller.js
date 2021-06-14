@@ -6,6 +6,8 @@ const plfunc = require('../function/parkinglots.function.js');
 
 // Create and Save a new Booking
 exports.create = async (req, res) => {
+    let time = bookingfunc.getTime();
+    console.log(time);
 
     var bookingID;
     // Validate request
@@ -42,7 +44,8 @@ exports.create = async (req, res) => {
                 parkinglotID: req.body.parkinglotID,
                 areaName: req.body.areaName,
                 slot_id: check_avail,
-                status: "Booked"
+                status: "Booked",
+                created_at: time
             });
 
             // Save Booking in the database
@@ -119,6 +122,7 @@ exports.create = async (req, res) => {
 
 // Retrieve and return all Booking from the database.
 exports.findAll = async (req, res) => {
+    
   
   let bookingArray =  await Booking.find().lean();
         // .then(bookings => {

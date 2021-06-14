@@ -5,13 +5,20 @@ const ParkingLotSchema = new Schema({
         longitude: { type: String, required: true },
         latitude: { type: String, required: true }
     },
-    address: { type: String, unique: true, required: true },
+    detail_address: {
+        number: { type: String, required: true },
+        street: { type: String, required: true },
+        district: { type: String, required: true },
+        city_province: { type: String, required: true },
+        country: { type: String, required: true }
+    },
+    address: { type: String, required: true },
     name: { type: String, unique: true, required: true },
     status: { type: String, required: true },
     area: [],
-    image: { type: String},
-    deleted: { type: String},
-    ownerID: { type: String}
+    image: { type: String },
+    deleted: { type: String },
+    ownerID: { type: String }
 },
     {
         versionKey: false

@@ -1,6 +1,7 @@
 module.exports = (app) => {
     const owners = require('../controllers/owner.controller.js');
 
+
  /**
      * @swagger
      * components:

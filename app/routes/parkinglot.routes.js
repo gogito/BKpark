@@ -12,6 +12,7 @@ module.exports = (app) => {
      *         - name
      *         - coordinate
      *         - address
+     *         - detail_address
      *       properties:
      *         _id:
      *           type: string
@@ -27,12 +28,26 @@ module.exports = (app) => {
      *         name:
      *           type: string
      *           description: The Parkinglot Name
-     *         address:
-     *           type: string
-     *           description: The Parkinglot Address
+     *         detail_address:
+     *           type: object
+     *           description: The Parkinglot Detailed Address
+     *           properties:
+     *              number:
+     *                  type: string
+     *              street:
+     *                  type: string     
+     *              district:
+     *                  type: string
+     *              city_province:
+     *                  type: string   
+     *              country:
+     *                  type: string     
      *         status:
      *           type: string
      *           description: The Parkinglot Status
+     *         address:
+     *           type: string
+     *           description: The Parkinglot Address
      *         image:
      *           type: string
      *           description: The Parkinglot Image

@@ -4,6 +4,7 @@ const Parkinglot_control = require('../controllers/parkinglot.controller');
 const bookingfunc = require('../function/booking.function.js');
 // Create and Save a new owner
 exports.create = (req, res) => {
+    
     // Validate request
     if (!req.body.password) {
         return res.status(400).send({
@@ -40,6 +41,7 @@ exports.create = (req, res) => {
         });
     }
 
+
     // Create an owner
     const owner = new Owner({
         username: req.body.username,
@@ -67,6 +69,8 @@ exports.create = (req, res) => {
 
 // Retrieve and return all owners from the database.
 exports.findAll = (req, res) => {
+
+    
     Owner.find()
         .then(owners => {
             res.send(owners);

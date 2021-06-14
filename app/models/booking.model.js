@@ -5,7 +5,8 @@ const BookingSchema = new Schema({
     parkinglotID: { type: String, required: true },
     areaName: { type: String, required: true },
     slot_id: { type: String, required: true },
-    status: { type: String, required: true }
+    status: { type: String, required: true },
+    created_at: { type: String, required: true }
 }, {
     versionKey: false
 },

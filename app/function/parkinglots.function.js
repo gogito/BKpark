@@ -128,6 +128,19 @@ exports.link_parkinglot_owner = async (parkingID, ownerID) => {
 
 }
 
+exports.unlink_parkinglot_owner = async (parkingID, ownerID) => {
+    // console.log(ownerID);
+    let content = {
+        $pull: {
+            "ownedParking": parkingID
+        }
+    }
+
+    await Owner.findOneAndUpdate({ _id: ownerID },
+        content, { new: true })
+
+}
+
 exports.check_slot_single = async (content, parkingID) => {
     
     let currentPL = await ParkingLot.findById(parkingID).lean();

@@ -1,6 +1,7 @@
 const ParkingLot = require('../models/parkinglot.model.js');
 const plfunc = require('../function/parkinglots.function.js');
 const bookingfunc = require('../function/booking.function.js');
+const Owner = require('../models/owner.model.js');
 
 
 // Create and Save a new ParkingLot
@@ -23,11 +24,7 @@ exports.create = (req, res) => {
         });
     }
 
-    if (!req.body.address) {
-        return res.status(400).send({
-            message: "Parking Lot Address can not be empty"
-        });
-    }
+    
 
     if (!req.body.status) {
         return res.status(400).send({
@@ -41,10 +38,61 @@ exports.create = (req, res) => {
         });
     }
 
+    if (!req.body.detail_address.number) {
+        return res.status(400).send({
+            message: "Street Number can not be empty"
+        });
+    }
+
+    if (!req.body.detail_address.street) {
+        return res.status(400).send({
+            message: "Street can not be empty"
+        });
+    }
+
+    if (!req.body.detail_address.district) {
+        return res.status(400).send({
+            message: "District can not be empty"
+        });
+    }
+
+    if (!req.body.detail_address.city_province) {
+        return res.status(400).send({
+            message: "City/Province can not be empty"
+        });
+    }
+
+    if (!req.body.detail_address.city_province) {
+        return res.status(400).send({
+            message: "City/Province can not be empty"
+        });
+    }
+
+    if (!req.body.detail_address.country) {
+        return res.status(400).send({
+            message: "Country can not be empty"
+        });
+    }
+    let number = req.body.detail_address.number;
+    let street = req.body.detail_address.street;
+    let district = req.body.detail_address.district;
+    let city_province = req.body.detail_address.city_province;
+    let country = req.body.detail_address.country;
+    // let string_address = req.body.detail_address.number + ' ' + req.body.detail_address.street + ' Street, ' + req.body.detail_address.district ' District, ' + req.body.detail_address.city_province + ', ' + req.body.detail_address.country;
+    // let string_address = JSON.stringify(req.body.detail_address.number)  + ' ' + JSON.stringify(req.body.detail_address.street) 
+
+    let string_address = number + ' ' + street + ' Street, ' + district + ' District, ' + city_province + ', ' + country;
     // Create a Parking Lot
     const parkinglot = new ParkingLot({
         name: req.body.name,
-        address: req.body.address,
+        detail_address: {
+            number: req.body.detail_address.number,
+            street: req.body.detail_address.street,
+            district: req.body.detail_address.district,
+            city_province: req.body.detail_address.city_province,
+            country: req.body.detail_address.country
+        },
+        address: string_address,
         coordinate: {
             latitude: req.body.coordinate.latitude,
             longitude: req.body.coordinate.longitude
@@ -222,6 +270,9 @@ exports.delete = async (req, res) => {
         bookingID_array[i] = booking_array[i]._id;
     }
 
+    let cur_ownerID = await ParkingLot.find({ _id: req.params.parkingId },{ ownerID:1 })
+    // console.log(cur_ownerID[0].ownerID);
+    await plfunc.unlink_parkinglot_owner(req.params.parkingId, cur_ownerID[0].ownerID);
     await bookingfunc.unbook_slot_multi(bookingID_array);
 
     let content = {
