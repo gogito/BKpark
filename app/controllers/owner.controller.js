@@ -169,29 +169,7 @@ exports.delete = (req, res) => {
         });
 };
 
-// Find Booking by Owner ID old
-// exports.find_booking_by_ownerID = async (req, res) => {
-
-    
-//     var complete_array = [];
-//     let result = await Owner.findById(req.params.ownerId).lean();
-//     let parking_array = result.ownedParking;
-
-//     for (let i = 0; i < parking_array.length; i++) {
-
-//         let booking_array = await bookingfunc.findBookingByParking_all(parking_array[i]);
-        
-//         let new_array = await bookingfunc.getName(booking_array);
-        
-//         complete_array = complete_array.concat(new_array);
-       
-//     }
-
-   
-
-//     res.send(complete_array);
-// };
-
+// Find Booking by Owner ID
 exports.find_booking_by_ownerID = async (req, res) => {
 
     var complete_array = [];

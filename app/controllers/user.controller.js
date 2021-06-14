@@ -88,7 +88,7 @@ exports.delete = async (req, res) => {
                     message: "User not found with id " + req.params.userId
                 });
             }
-            
+
         }).catch(err => {
             if (err.kind === 'ObjectId' || err.name === 'NotFound') {
                 return res.status(404).send({
@@ -110,11 +110,36 @@ exports.delete = async (req, res) => {
     }
 
     var promise1 = Booking.deleteMany({ _id: { $in: bookingID_array } }).exec();
-    
+
     await Promise.all([promise1]).then(function (value) {
         return_array = value[0];
-    });   
+    });
 
 
     res.send("Deleted User and Booking");
 };
+
+// Find Booking by User ID
+exports.find_booking_by_userID = async (req, res) => {
+    var booking_array = [];
+    var complete_array = [];
+    let result = await User.findById(req.params.userId).lean();
+
+    let successArray = result.successBooking;
+    let failArray = result.failBooking;
+    
+    if (result.currentBooking != null && result.currentBooking != '') {
+        booking_array.push(result.currentBooking)
+    }
+
+    booking_array = booking_array.concat(successArray);
+    booking_array = booking_array.concat(failArray);
+    
+        let booking_array_full = await Booking.find({ _id: { $in: booking_array } }).lean().exec();
+        
+        let new_array = await bookingfunc.getName(booking_array_full);
+        
+        complete_array = new_array;
+       
+    res.send(complete_array);
+}

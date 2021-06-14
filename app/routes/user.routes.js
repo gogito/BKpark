@@ -207,4 +207,30 @@ module.exports = (app) => {
  */
 
     app.delete('/users/:userId', users.delete);
+
+        // Find all booking from userID
+/**
+ * @swagger
+ * /users/{id}/booking:
+ *   get:
+ *     summary: Find all booking from userID
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The user id
+ *     responses:
+ *       200:
+ *         description: Booking detail
+ *         contens:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Booking'
+ *       404:
+ *         description: The user was not found
+ */
+ app.get('/users/:userId/booking', users.find_booking_by_userID);
 }
