@@ -2,6 +2,7 @@ const ParkingLot = require('../models/parkinglot.model.js');
 const plfunc = require('../function/parkinglots.function.js');
 const bookingfunc = require('../function/booking.function.js');
 const Owner = require('../models/owner.model.js');
+const Booking = require('../models/booking.model.js');
 
 
 // Create and Save a new ParkingLot
@@ -261,10 +262,12 @@ exports.findOne = (req, res) => {
 
 // Delete a single Parking Lot with a parkingId
 exports.delete = async (req, res) => {
+    
     var bookingID_array = [];
 
 
     let booking_array = await bookingfunc.findBookingByParking(req.params.parkingId);
+    console.log(booking_array);
     if (booking_array.length > 0) {
         for (let i = 0; i < booking_array.length; i++) {
             bookingID_array[i] = booking_array[i]._id;
@@ -273,33 +276,36 @@ exports.delete = async (req, res) => {
         let cur_ownerID = await ParkingLot.find({ _id: req.params.parkingId }, { ownerID: 1 })
         // console.log(cur_ownerID[0].ownerID);
         await plfunc.unlink_parkinglot_owner(req.params.parkingId, cur_ownerID[0].ownerID);
-        await bookingfunc.unbook_slot_multi(bookingID_array);
+        console.log(bookingID_array);
+        await Booking.deleteMany({ _id: { $in: bookingID_array } }).exec();
     }
-    let content = {
-        $set: { "deleted": "true" }
+    
+    await ParkingLot.remove({ _id: req.params.parkingId })
+        res.send("Parking Lot deleted ");
+
+};
+// Delete a single Parking Lot with a parkingId for Owner
+exports.delete_for_owner = async (parkingId) => {
+    
+    var bookingID_array = [];
+
+
+    let booking_array = await bookingfunc.findBookingByParking(parkingId);
+    console.log(booking_array);
+    if (booking_array.length > 0) {
+        for (let i = 0; i < booking_array.length; i++) {
+            bookingID_array[i] = booking_array[i]._id;
+        }
+
+        let cur_ownerID = await ParkingLot.find({ _id: parkingId }, { ownerID: 1 })
+        // console.log(cur_ownerID[0].ownerID);
+        await plfunc.unlink_parkinglot_owner(parkingId, cur_ownerID[0].ownerID);
+        console.log(bookingID_array);
+        await Booking.deleteMany({ _id: { $in: bookingID_array } }).exec();
     }
-
-    await ParkingLot.findOneAndUpdate({ _id: req.params.parkingId },
-        content, { new: true })
-        .then(parkinglot => {
-            if (!parkinglot) {
-                return res.status(404).send({
-                    message: "Parking Lot not found with id " + req.params.parkingId
-                });
-            }
-            res.send(parkinglot);
-
-        }).catch(err => {
-            if (err.kind === 'ObjectId') {
-                return res.status(404).send({
-                    message: "Parking Lot not found with id " + req.params.parkingId
-                });
-            }
-            return res.status(500).send({
-                message: "Error updating Parking Lot with id " + req.params.parkingId
-            });
-        });
-
+    
+    await ParkingLot.remove({ _id: parkingId })
+     
 
 };
 

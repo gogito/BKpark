@@ -81,6 +81,14 @@ exports.update = (req, res) => {
 
 // Delete a user with the specified userId in the request
 exports.delete = async (req, res) => {
+
+
+    let cur_user = await User.findById(req.params.userId);
+    if (cur_user.currentBooking != null && cur_user.currentBooking != '') {
+
+        bookingfunc.unbook_slot(cur_user.currentBooking);
+    }
+
     User.findByIdAndRemove(req.params.userId)
         .then(user => {
             if (!user) {
@@ -100,22 +108,27 @@ exports.delete = async (req, res) => {
             });
         });
 
+
+
+
+
     var bookingID_array = [];
     var return_array = [];
 
     let booking_array = await bookingfunc.findBookingByUser(req.params.userId);
 
-    for (let i = 0; i < booking_array.length; i++) {
-        bookingID_array[i] = booking_array[i]._id;
+    if (booking_array.length > 0) {
+        for (let i = 0; i < booking_array.length; i++) {
+            bookingID_array[i] = booking_array[i]._id;
+        }
+
+        var promise1 = Booking.deleteMany({ _id: { $in: bookingID_array } }).exec();
+
+        await Promise.all([promise1]).then(function (value) {
+            return_array = value[0];
+        });
+
     }
-
-    var promise1 = Booking.deleteMany({ _id: { $in: bookingID_array } }).exec();
-
-    await Promise.all([promise1]).then(function (value) {
-        return_array = value[0];
-    });
-
-
     res.send("Deleted User and Booking");
 };
 
@@ -127,19 +140,19 @@ exports.find_booking_by_userID = async (req, res) => {
 
     let successArray = result.successBooking;
     let failArray = result.failBooking;
-    
+
     if (result.currentBooking != null && result.currentBooking != '') {
         booking_array.push(result.currentBooking)
     }
 
     booking_array = booking_array.concat(successArray);
     booking_array = booking_array.concat(failArray);
-    
-        let booking_array_full = await Booking.find({ _id: { $in: booking_array } }).lean().exec();
-        
-        let new_array = await bookingfunc.getName(booking_array_full);
-        
-        complete_array = new_array;
-       
+
+    let booking_array_full = await Booking.find({ _id: { $in: booking_array } }).lean().exec();
+
+    let new_array = await bookingfunc.getName(booking_array_full);
+
+    complete_array = new_array;
+
     res.send(complete_array);
 }

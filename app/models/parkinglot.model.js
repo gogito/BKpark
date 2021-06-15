@@ -17,7 +17,6 @@ const ParkingLotSchema = new Schema({
     status: { type: String, required: true },
     area: [],
     image: { type: String },
-    deleted: { type: String },
     ownerID: { type: String }
 },
     {

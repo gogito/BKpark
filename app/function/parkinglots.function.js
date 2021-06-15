@@ -167,7 +167,7 @@ exports.getParkinglotName_all = async () => {
 
     let current_owner_array = await Owner.find().lean().exec();
 
-    for (i = 0; i < current_owner_array.length; i++){
+    for (i = 0; i < current_owner_array.length; i++) {
 
         current_owner_array[i] = await this.getParkinglotName(current_owner_array[i]);
 
@@ -181,12 +181,14 @@ exports.getParkinglotName = async (ownerID) => {
     var parking_lot_name_array_lean = [];
     let current_owner = await Owner.findById(ownerID).lean().exec();
     let parkinglot_ID_array = current_owner.ownedParking;
-    let parkinglot_name_array = await ParkingLot.find({_id: {$in: parkinglot_ID_array}},{name:1,_id:0}).lean().exec()
-    // console.log(parkinglot_name_array);
-    for (i = 0; i < parkinglot_name_array.length; i++){
-        // console.log(i);
-        parking_lot_name_array_lean[i] = parkinglot_name_array[i].name; 
+    if (parkinglot_ID_array.length > 0) {
+        let parkinglot_name_array = await ParkingLot.find({ _id: { $in: parkinglot_ID_array } }, { name: 1, _id: 0 }).lean().exec()
+        // console.log(parkinglot_name_array);
+        for (i = 0; i < parkinglot_name_array.length; i++) {
+            // console.log(i);
+            parking_lot_name_array_lean[i] = parkinglot_name_array[i].name;
+        }
+        current_owner.ownedParkingName = parking_lot_name_array_lean;
     }
-    current_owner.ownedParkingName = parking_lot_name_array_lean;
     return current_owner;
 }

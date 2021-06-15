@@ -5,7 +5,7 @@ const bookingfunc = require('../function/booking.function.js');
 const plfunc = require('../function/parkinglots.function.js');
 // Create and Save a new owner
 exports.create = (req, res) => {
-    
+
     // Validate request
     if (!req.body.password) {
         return res.status(400).send({
@@ -79,8 +79,8 @@ exports.findAll = async (req, res) => {
 
 // Find a single owner with a UserId
 exports.findOne = async (req, res) => {
-   let result = await plfunc.getParkinglotName(req.params.ownerId);
-   res.send(result);
+    let result = await plfunc.getParkinglotName(req.params.ownerId);
+    res.send(result);
 };
 
 // Update a owner identified by the ownerId in the request
@@ -127,25 +127,20 @@ exports.update = (req, res) => {
 };
 
 // Delete an owner with the specified ownerId in the request
-exports.delete = (req, res) => {
-    Owner.findByIdAndRemove(req.params.ownerId)
-        .then(owner => {
-            if (!owner) {
-                return res.status(404).send({
-                    message: "Owner not found with id " + req.params.ownerId
-                });
-            }
-            res.send({ message: "Owner deleted successfully!" });
-        }).catch(err => {
-            if (err.kind === 'ObjectId' || err.name === 'NotFound') {
-                return res.status(404).send({
-                    message: "Owner not found with id " + req.params.ownerId
-                });
-            }
-            return res.status(500).send({
-                message: "Could not delete owner with id " + req.params.ownerId
-            });
-        });
+exports.delete = async (req, res) => {
+    
+    let cur_owner = await Owner.findById(req.params.ownerId);
+    let parking_array = cur_owner.ownedParking;
+    console.log(parking_array);
+    if (parking_array.length > 0) {
+        for (i = 0; i < parking_array.length; i++) {
+            console.log(parking_array[i]);
+            await Parkinglot_control.delete_for_owner(parking_array[i])
+        }
+    }
+    await Owner.findByIdAndDelete(req.params.ownerId);
+    res.send("Deleted Owner")
+
 };
 
 // Find Booking by Owner ID
@@ -155,12 +150,12 @@ exports.find_booking_by_ownerID = async (req, res) => {
     let result = await Owner.findById(req.params.ownerId).lean();
     let parking_array = result.ownedParking;
 
-        let booking_array = await bookingfunc.findBookingByParking_all_array(parking_array);
-        
-        let new_array = await bookingfunc.getName(booking_array);
-        
-        complete_array = new_array;
-       
+    let booking_array = await bookingfunc.findBookingByParking_all_array(parking_array);
+
+    let new_array = await bookingfunc.getName(booking_array);
+
+    complete_array = new_array;
+
     res.send(complete_array);
 };
 
@@ -171,7 +166,7 @@ exports.find_parking_by_ownerID = async (req, res) => {
     let result = await Owner.findById(req.params.ownerId).lean();
     let parking_array = result.ownedParking;
 
-    complete_array = await Parkinglot.find({ '_id': { $in:parking_array} }).lean().exec();
+    complete_array = await Parkinglot.find({ '_id': { $in: parking_array } }).lean().exec();
 
     res.send(complete_array);
 }
