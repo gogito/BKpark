@@ -24,7 +24,7 @@ exports.create = (req, res) => {
         });
     }
 
-    
+
 
     if (!req.body.status) {
         return res.status(400).send({
@@ -265,16 +265,16 @@ exports.delete = async (req, res) => {
 
 
     let booking_array = await bookingfunc.findBookingByParking(req.params.parkingId);
+    if (booking_array.length > 0) {
+        for (let i = 0; i < booking_array.length; i++) {
+            bookingID_array[i] = booking_array[i]._id;
+        }
 
-    for (let i = 0; i < booking_array.length; i++) {
-        bookingID_array[i] = booking_array[i]._id;
+        let cur_ownerID = await ParkingLot.find({ _id: req.params.parkingId }, { ownerID: 1 })
+        // console.log(cur_ownerID[0].ownerID);
+        await plfunc.unlink_parkinglot_owner(req.params.parkingId, cur_ownerID[0].ownerID);
+        await bookingfunc.unbook_slot_multi(bookingID_array);
     }
-
-    let cur_ownerID = await ParkingLot.find({ _id: req.params.parkingId },{ ownerID:1 })
-    // console.log(cur_ownerID[0].ownerID);
-    await plfunc.unlink_parkinglot_owner(req.params.parkingId, cur_ownerID[0].ownerID);
-    await bookingfunc.unbook_slot_multi(bookingID_array);
-
     let content = {
         $set: { "deleted": "true" }
     }

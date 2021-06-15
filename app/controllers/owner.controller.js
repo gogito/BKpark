@@ -2,6 +2,7 @@ const Owner = require('../models/owner.model.js');
 const Parkinglot = require('../models/parkinglot.model.js');
 const Parkinglot_control = require('../controllers/parkinglot.controller');
 const bookingfunc = require('../function/booking.function.js');
+const plfunc = require('../function/parkinglots.function.js');
 // Create and Save a new owner
 exports.create = (req, res) => {
     
@@ -68,40 +69,18 @@ exports.create = (req, res) => {
 };
 
 // Retrieve and return all owners from the database.
-exports.findAll = (req, res) => {
+exports.findAll = async (req, res) => {
 
-    
-    Owner.find()
-        .then(owners => {
-            res.send(owners);
-        }).catch(err => {
-            res.status(500).send({
-                message: err.message || "Some error occurred while retrieving owners."
-            });
-        });
+    var result_array = [];
+    result_array = await plfunc.getParkinglotName_all();
+    res.send(result_array);
 };
 
 
 // Find a single owner with a UserId
-exports.findOne = (req, res) => {
-    Owner.findById(req.params.ownerId)
-        .then(owner => {
-            if (!owner) {
-                return res.status(404).send({
-                    message: "Owner not found with id " + req.params.ownerId
-                });
-            }
-            res.send(owner);
-        }).catch(err => {
-            if (err.kind === 'ObjectId') {
-                return res.status(404).send({
-                    message: "Owner not found with id " + req.params.ownerId
-                });
-            }
-            return res.status(500).send({
-                message: "Error retrieving owner with id " + req.params.ownerId
-            });
-        });
+exports.findOne = async (req, res) => {
+   let result = await plfunc.getParkinglotName(req.params.ownerId);
+   res.send(result);
 };
 
 // Update a owner identified by the ownerId in the request
