@@ -129,7 +129,7 @@ exports.delete = async (req, res) => {
         });
 
     }
-    res.send("Deleted User and Booking");
+    res.send( {message: "Deleted User and Booking"});
 };
 
 // Find Booking by User ID

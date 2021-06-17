@@ -27,7 +27,7 @@ const dbConfig = require('./config/database.config.js');
 const mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
-
+mongoose.set('useCreateIndex', true);
 // Connecting to the database
 mongoose.connect(dbConfig.url, {
     useNewUrlParser: true,
@@ -38,7 +38,7 @@ mongoose.connect(dbConfig.url, {
     console.log('Could not connect to the database. Exiting now...', err);
     process.exit();
 });
-
+mongoose.set('useFindAndModify', false);
 // Swagger API Doc
 const swaggerOptions = {
     swaggerDefinition: {

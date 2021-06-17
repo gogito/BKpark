@@ -1,7 +1,7 @@
 const ParkingLot = require('../models/parkinglot.model.js');
 const Owner = require('../models/owner.model.js');
-
-
+const bookingfunc = require('../function/booking.function.js');
+const Booking = require('../models/booking.model.js');
 exports.cal_status_func = async (id) => {
 
     var full_num = 0;
@@ -129,7 +129,7 @@ exports.link_parkinglot_owner = async (parkingID, ownerID) => {
 }
 
 exports.unlink_parkinglot_owner = async (parkingID, ownerID) => {
-    // console.log(ownerID);
+
     let content = {
         $pull: {
             "ownedParking": parkingID
@@ -167,28 +167,57 @@ exports.getParkinglotName_all = async () => {
 
     let current_owner_array = await Owner.find().lean().exec();
 
-    for (i = 0; i < current_owner_array.length; i++) {
-
-        current_owner_array[i] = await this.getParkinglotName(current_owner_array[i]);
-
+    for (j = 0; j < current_owner_array.length; j++) {
+  
+        current_owner_array[j] = await this.getParkinglotName(current_owner_array[j]._id);
+        
     }
-
+ 
     return current_owner_array;
 
 }
 
 exports.getParkinglotName = async (ownerID) => {
+    
     var parking_lot_name_array_lean = [];
     let current_owner = await Owner.findById(ownerID).lean().exec();
     let parkinglot_ID_array = current_owner.ownedParking;
+
     if (parkinglot_ID_array.length > 0) {
+        
         let parkinglot_name_array = await ParkingLot.find({ _id: { $in: parkinglot_ID_array } }, { name: 1, _id: 0 }).lean().exec()
-        // console.log(parkinglot_name_array);
+
         for (i = 0; i < parkinglot_name_array.length; i++) {
-            // console.log(i);
+      
             parking_lot_name_array_lean[i] = parkinglot_name_array[i].name;
         }
         current_owner.ownedParkingName = parking_lot_name_array_lean;
     }
     return current_owner;
 }
+
+exports.delete_for_owner = async (parkingId) => {
+    
+    var bookingID_array = [];
+
+
+    let booking_array = await bookingfunc.findBookingByParking(parkingId);
+
+    if (booking_array.length > 0) {
+        for (let i = 0; i < booking_array.length; i++) {
+            bookingID_array[i] = booking_array[i]._id;
+        }
+
+
+
+        await Booking.deleteMany({ _id: { $in: bookingID_array } }).exec();
+    }
+    let cur_ownerID = await ParkingLot.find({ _id: parkingId }, { ownerID: 1 })
+
+   
+    await this.unlink_parkinglot_owner(parkingId, cur_ownerID[0].ownerID);
+
+    await ParkingLot.deleteOne({ _id: parkingId })
+  
+
+};

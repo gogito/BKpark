@@ -282,7 +282,7 @@ exports.findBookingByParking = async (parkingID) => {
 }
 
 exports.findBookingByParking_all = async (parkingID) => {
-    console.log(parking)
+    // console.log(parking)
     var bookingID_array;
     var promise1 = Booking.find({ parkinglotID: parkingID }).lean().exec();
     await Promise.all([promise1]).then(function (value) {

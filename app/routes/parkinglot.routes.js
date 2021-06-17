@@ -293,7 +293,7 @@ module.exports = (app) => {
 
 
 
-app.delete('/parkinglots/:parkingId', parkinglots.delete);
+app.delete('/parkinglots/:parkingId', parkinglots.delete_for_owner);
 
 
     // Find all Booking from a Parking Lot with parkingId

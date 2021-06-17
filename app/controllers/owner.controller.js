@@ -1,6 +1,5 @@
 const Owner = require('../models/owner.model.js');
 const Parkinglot = require('../models/parkinglot.model.js');
-const Parkinglot_control = require('../controllers/parkinglot.controller');
 const bookingfunc = require('../function/booking.function.js');
 const plfunc = require('../function/parkinglots.function.js');
 // Create and Save a new owner
@@ -131,15 +130,15 @@ exports.delete = async (req, res) => {
     
     let cur_owner = await Owner.findById(req.params.ownerId);
     let parking_array = cur_owner.ownedParking;
-    console.log(parking_array);
+   
     if (parking_array.length > 0) {
         for (i = 0; i < parking_array.length; i++) {
-            console.log(parking_array[i]);
-            await Parkinglot_control.delete_for_owner(parking_array[i])
+       
+            await plfunc.delete_for_owner(parking_array[i])
         }
     }
     await Owner.findByIdAndDelete(req.params.ownerId);
-    res.send("Deleted Owner")
+    res.send({message: "Deleted Owner"})
 
 };
 

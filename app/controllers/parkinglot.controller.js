@@ -262,7 +262,7 @@ exports.findOne = (req, res) => {
 
 // Delete a single Parking Lot with a parkingId
 exports.delete = async (req, res) => {
-    
+
     var bookingID_array = [];
 
 
@@ -279,33 +279,36 @@ exports.delete = async (req, res) => {
         console.log(bookingID_array);
         await Booking.deleteMany({ _id: { $in: bookingID_array } }).exec();
     }
-    
+
     await ParkingLot.remove({ _id: req.params.parkingId })
-        res.send("Parking Lot deleted ");
+    res.send("Parking Lot deleted ");
 
 };
 // Delete a single Parking Lot with a parkingId for Owner
-exports.delete_for_owner = async (parkingId) => {
-    
+exports.delete_for_owner = async (req, res) => {
+    let parkingId = req.params.parkingId;
+   
     var bookingID_array = [];
 
 
     let booking_array = await bookingfunc.findBookingByParking(parkingId);
-    console.log(booking_array);
+
     if (booking_array.length > 0) {
         for (let i = 0; i < booking_array.length; i++) {
             bookingID_array[i] = booking_array[i]._id;
         }
 
-        let cur_ownerID = await ParkingLot.find({ _id: parkingId }, { ownerID: 1 })
-        // console.log(cur_ownerID[0].ownerID);
-        await plfunc.unlink_parkinglot_owner(parkingId, cur_ownerID[0].ownerID);
-        console.log(bookingID_array);
+
+
         await Booking.deleteMany({ _id: { $in: bookingID_array } }).exec();
     }
-    
-    await ParkingLot.remove({ _id: parkingId })
-     
+    let cur_ownerID = await ParkingLot.find({ _id: parkingId }, { ownerID: 1 })
+
+   
+    await plfunc.unlink_parkinglot_owner(parkingId, cur_ownerID[0].ownerID);
+
+    await ParkingLot.deleteOne({ _id: parkingId })
+    res.send({ message: "Deleted Parkinglot" });
 
 };
 
