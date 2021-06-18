@@ -284,6 +284,7 @@ exports.delete = async (req, res) => {
     res.send("Parking Lot deleted ");
 
 };
+
 // Delete a single Parking Lot with a parkingId for Owner
 exports.delete_for_owner = async (req, res) => {
     let parkingId = req.params.parkingId;
@@ -294,12 +295,13 @@ exports.delete_for_owner = async (req, res) => {
     let booking_array = await bookingfunc.findBookingByParking(parkingId);
 
     if (booking_array.length > 0) {
+        
         for (let i = 0; i < booking_array.length; i++) {
             bookingID_array[i] = booking_array[i]._id;
         }
 
-
-
+        
+        await bookingfunc.clearBookingfromUser(bookingID_array);
         await Booking.deleteMany({ _id: { $in: bookingID_array } }).exec();
     }
     let cur_ownerID = await ParkingLot.find({ _id: parkingId }, { ownerID: 1 })

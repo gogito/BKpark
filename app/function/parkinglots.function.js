@@ -208,7 +208,8 @@ exports.delete_for_owner = async (parkingId) => {
             bookingID_array[i] = booking_array[i]._id;
         }
 
-
+     
+        await bookingfunc.clearBookingfromUser(bookingID_array);
 
         await Booking.deleteMany({ _id: { $in: bookingID_array } }).exec();
     }

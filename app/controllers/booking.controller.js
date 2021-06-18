@@ -7,7 +7,7 @@ const plfunc = require('../function/parkinglots.function.js');
 // Create and Save a new Booking
 exports.create = async (req, res) => {
     let time = bookingfunc.getTime();
-    console.log(time);
+
 
     var bookingID;
     // Validate request

@@ -82,12 +82,16 @@ exports.update = (req, res) => {
 // Delete a user with the specified userId in the request
 exports.delete = async (req, res) => {
 
-
+    var booking_array = [];
     let cur_user = await User.findById(req.params.userId);
     if (cur_user.currentBooking != null && cur_user.currentBooking != '') {
 
-        bookingfunc.unbook_slot(cur_user.currentBooking);
+       await bookingfunc.cancel_booking(cur_user.currentBooking);
+       cur_user.failBooking.push(cur_user.currentBooking);
     }
+
+    booking_array = cur_user.failBooking.concat(cur_user.successBooking);
+    await Booking.deleteMany({ _id: { $in: booking_array } }).exec();
 
     User.findByIdAndRemove(req.params.userId)
         .then(user => {
@@ -108,27 +112,6 @@ exports.delete = async (req, res) => {
             });
         });
 
-
-
-
-
-    var bookingID_array = [];
-    var return_array = [];
-
-    let booking_array = await bookingfunc.findBookingByUser(req.params.userId);
-
-    if (booking_array.length > 0) {
-        for (let i = 0; i < booking_array.length; i++) {
-            bookingID_array[i] = booking_array[i]._id;
-        }
-
-        var promise1 = Booking.deleteMany({ _id: { $in: bookingID_array } }).exec();
-
-        await Promise.all([promise1]).then(function (value) {
-            return_array = value[0];
-        });
-
-    }
     res.send( {message: "Deleted User and Booking"});
 };
 

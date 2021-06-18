@@ -67,13 +67,13 @@ exports.unbook_slot = async (bookingID) => {
         let slot_id = booking_data.slot_id;
 
         data = await ParkingLot.findById(parkingID).lean();
-        
+
 
 
         for (let i = 0; i < data.area.length; i++) {
-            console.log(data.area[i]);
+
             if (data.area[i].name == areaName) {
-                console.log(data.area[i].name);
+              
 
                 data.area[i].slots[slot_id] = 0;
                 data.area[i].fullslot -= 1;
@@ -126,11 +126,11 @@ exports.unbook_slot = async (bookingID) => {
                             message: "Error updating Parking Lot with id " + parkingID
                         });
                     });
-                    return true;
+                return true;
 
             }
 
-            
+
 
         }
 
@@ -273,7 +273,7 @@ exports.getName = async (bookingArray) => {
 
 exports.findBookingByParking = async (parkingID) => {
     var bookingID_array;
-    var promise1 = Booking.find({ parkinglotID: parkingID}).exec();
+    var promise1 = Booking.find({ parkinglotID: parkingID }).exec();
     await Promise.all([promise1]).then(function (value) {
         bookingID_array = value[0];
     });
@@ -357,4 +357,52 @@ exports.getTime = () => {
     // // prints time in HH:MM format
     // console.log(hours + ":" + minutes);
 
+}
+
+exports.clearBookingfromUser = async (booking_id_array) => {
+    var current_booking = [];
+
+    current_booking = await User.find({ 'currentBooking': { $in: booking_id_array } }, { currentBooking: 1 }).lean().exec();
+
+    for (let g = 0; g < current_booking.length; g++) {
+
+        await this.cancel_booking(current_booking[g].currentBooking);
+    }
+
+
+
+    let content = {
+        $pull: {
+            "failBooking": { $in: booking_id_array }, "successBooking": { $in: booking_id_array }
+        }
+    }
+
+
+    await User.updateMany({},
+        content, { multi: true })
+
+
+}
+
+// Cancel Booking
+exports.cancel_booking = async (bookingID) => {
+
+    let check_unbook = await this.unbook_slot(bookingID);
+
+    if (check_unbook) {
+   
+        await Booking.findOneAndUpdate({ _id: bookingID },
+            { $set: { "status": "Failed" } }, { new: true })
+
+        let booking_data = await Booking.findById(bookingID);
+
+        let booked_user_data = await User.findById(booking_data.userID);
+
+        booked_user_data.failBooking.push(booked_user_data.currentBooking);
+        booked_user_data.currentBooking = '';
+
+        await User.findOneAndUpdate({ _id: booking_data.userID },
+            { $set: { "currentBooking": booked_user_data.currentBooking, "failBooking": booked_user_data.failBooking } }, { new: true })
+
+    }
 }

@@ -12,7 +12,7 @@ const UserSchema = new Schema({
     carplateNumber: [{type: String, unique: true}],
     personalID: { type: String, required: true, unique: true },
     successBooking: [{type: String}],
-    currentBooking: { type: String, unique: true},
+    currentBooking: { type: String},
     failBooking: [{type: String}]
 }, {
     versionKey: false
