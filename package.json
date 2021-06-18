@@ -1,5 +1,5 @@
 {
-  "name": "BKParking API Server",
+  "name": "bkparking-api-server",
   "version": "1.0.0",
   "description": "BKParking API Server",
   "main": "server.js",
