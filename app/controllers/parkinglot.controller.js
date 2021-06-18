@@ -4,7 +4,6 @@ const bookingfunc = require('../function/booking.function.js');
 const Owner = require('../models/owner.model.js');
 const Booking = require('../models/booking.model.js');
 
-
 // Create and Save a new ParkingLot
 exports.create = (req, res) => {
     // Validate request
@@ -359,13 +358,12 @@ exports.addArea = async (req, res) => {
 
 // Update area SLOT in a Parkinglot with ParkingId
 exports.updateAreaSlot = async (req, res) => {
-    // console.log(req.body)
 
     let slot_content = await plfunc.check_slot_single(req.body, req.params.parkingId);
     let content = {
         $set: { "area.$.slots": slot_content.area.slots }
     }
-    // console.log(slot_content.area.slots);
+
     await ParkingLot.findOneAndUpdate({ _id: req.params.parkingId, "area.name": slot_content.area.name }, content, { new: true })
         .then(parking => {
 
@@ -374,7 +372,6 @@ exports.updateAreaSlot = async (req, res) => {
                     message: "Parking Lot not found with id " + req.params.parkingId
                 });
             }
-            // res.send(parkinglot);
 
         }).catch(err => {
             if (err.kind === 'ObjectId') {

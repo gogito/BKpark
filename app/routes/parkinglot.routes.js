@@ -201,6 +201,20 @@ module.exports = (app) => {
  *                    type: string
  *                  address:
  *                    type: string
+      *         detail_address:
+     *           type: object
+     *           description: The Parkinglot Detailed Address
+     *           properties:
+     *              number:
+     *                  type: string
+     *              street:
+     *                  type: string     
+     *              district:
+     *                  type: string
+     *              city_province:
+     *                  type: string   
+     *              country:
+     *                  type: string      
  *                  coordinate:
  *                    type: object
  *                    properties:
