@@ -25,8 +25,6 @@ exports.create = (req, res) => {
         });
     }
 
-
-
     if (!req.body.status) {
         return res.status(400).send({
             message: "Parking Lot Status can not be empty"
@@ -79,8 +77,6 @@ exports.create = (req, res) => {
     let district = req.body.detail_address.district;
     let city_province = req.body.detail_address.city_province;
     let country = req.body.detail_address.country;
-    // let string_address = req.body.detail_address.number + ' ' + req.body.detail_address.street + ' Street, ' + req.body.detail_address.district ' District, ' + req.body.detail_address.city_province + ', ' + req.body.detail_address.country;
-    // let string_address = JSON.stringify(req.body.detail_address.number)  + ' ' + JSON.stringify(req.body.detail_address.street) 
 
     let string_address = number + ' ' + street + ' Street, ' + district + ' District, ' + city_province + ', ' + country;
     // Create a Parking Lot
@@ -103,9 +99,6 @@ exports.create = (req, res) => {
         ownerID: req.body.ownerID
     });
 
-
-
-
     // Save ParkingLot in the database
     parkinglot.save()
         .then(data => {
@@ -116,8 +109,6 @@ exports.create = (req, res) => {
                 message: err.message || "Some error occurred while creating the ParkingLot."
             });
         });
-
-
 
 };
 
@@ -133,10 +124,8 @@ exports.findAll = (req, res) => {
         });
 };
 
-// Update a ParkingLot identified by the parkingId in the request and status
+// Update a ParkingLot identified by the parkingId in the request
 exports.update = async (req, res) => {
-    // Find Parking Lot and update it with the request body
-    let content = await plfunc.check_slot(req.body.info, req.params.parkingId);
 
     if (req.body.infoArray !== undefined && req.body.info !== undefined) {
         content = {
@@ -158,65 +147,22 @@ exports.update = async (req, res) => {
 
     await ParkingLot.findOneAndUpdate({ _id: req.params.parkingId },
         content, { new: true })
-        .then(parking => {
-            if (!parking) {
-                return res.status(404).send({
-                    message: "Parking Lot not found with id " + req.params.parkingId
-                });
-            }
-            // res.send(parkinglot);
+    
+    let detail = await ParkingLot.findById(req.params.parkingId);
 
-        }).catch(err => {
-            if (err.kind === 'ObjectId') {
-                return res.status(404).send({
-                    message: "Parking Lot not found with id " + req.params.parkingId
-                });
-            }
-            return res.status(500).send({
-                message: "Error updating Parking Lot with id " + req.params.parkingId
-            });
-        });
+    let number = detail.detail_address.number;
+    let street = detail.detail_address.street;
+    let district = detail.detail_address.district;
+    let city_province = detail.detail_address.city_province;
+    let country = detail.detail_address.country;
 
-
-    var slotResult = await plfunc.cal_slot_id_func(req.params.parkingId)
-    slotResult = '[' + slotResult + ']';
-
-    const jsonResult = JSON.parse(slotResult);
+    let string_address = number + ' ' + street + ' Street, ' + district + ' District, ' + city_province + ', ' + country;
 
     content = {
-        $set: { "area": jsonResult }
+        $set: { "address": string_address }
     }
-
-
 
     await ParkingLot.findOneAndUpdate({ _id: req.params.parkingId },
-        content, { new: true })
-        .then(parkinglot => {
-            if (!parkinglot) {
-                return res.status(404).send({
-                    message: "Parking Lot not found with id " + req.params.parkingId
-                });
-            }
-        }).catch(err => {
-            if (err.kind === 'ObjectId') {
-                return res.status(404).send({
-                    message: "Parking Lot not found with id " + req.params.parkingId
-                });
-            }
-            return res.status(500).send({
-                message: "Error updating Parking Lot with id " + req.params.parkingId
-            });
-        });
-
-
-
-    const result = await plfunc.cal_status_func(req.params.parkingId)
-
-    content = {
-        $set: { "status": result }
-    }
-
-    ParkingLot.findOneAndUpdate({ _id: req.params.parkingId },
         content, { new: true })
         .then(parkinglot => {
             if (!parkinglot) {
@@ -288,25 +234,25 @@ exports.delete = async (req, res) => {
 // Delete a single Parking Lot with a parkingId for Owner
 exports.delete_for_owner = async (req, res) => {
     let parkingId = req.params.parkingId;
-   
+
     var bookingID_array = [];
 
 
     let booking_array = await bookingfunc.findBookingByParking(parkingId);
 
     if (booking_array.length > 0) {
-        
+
         for (let i = 0; i < booking_array.length; i++) {
             bookingID_array[i] = booking_array[i]._id;
         }
 
-        
+
         await bookingfunc.clearBookingfromUser(bookingID_array);
         await Booking.deleteMany({ _id: { $in: bookingID_array } }).exec();
     }
     let cur_ownerID = await ParkingLot.find({ _id: parkingId }, { ownerID: 1 })
 
-   
+
     await plfunc.unlink_parkinglot_owner(parkingId, cur_ownerID[0].ownerID);
 
     await ParkingLot.deleteOne({ _id: parkingId })
