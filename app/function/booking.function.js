@@ -384,7 +384,6 @@ exports.clearBookingfromUser = async (booking_id_array) => {
 
 }
 
-// Cancel Booking
 exports.cancel_booking = async (bookingID) => {
 
     let check_unbook = await this.unbook_slot(bookingID);
@@ -405,4 +404,14 @@ exports.cancel_booking = async (bookingID) => {
             { $set: { "currentBooking": booked_user_data.currentBooking, "failBooking": booked_user_data.failBooking } }, { new: true })
 
     }
+}
+
+exports.findCurrentBookingByParkingandArea = async (parkingID, areaName) => {
+    var bookingID_array;
+    var promise1 = Booking.find({ parkinglotID: parkingID, areaName: areaName, status: "Booked" }).exec();
+    await Promise.all([promise1]).then(function (value) {
+        bookingID_array = value[0];
+    });
+
+    return bookingID_array;
 }

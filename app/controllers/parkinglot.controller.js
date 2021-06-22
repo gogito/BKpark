@@ -146,7 +146,7 @@ exports.update = async (req, res) => {
 
     await ParkingLot.findOneAndUpdate({ _id: req.params.parkingId },
         content, { new: true })
-    
+
     let detail = await ParkingLot.findById(req.params.parkingId);
 
     let number = detail.detail_address.number;
@@ -358,6 +358,15 @@ exports.addArea = async (req, res) => {
 
 // Update area SLOT in a Parkinglot with ParkingId
 exports.updateAreaSlot = async (req, res) => {
+    for (i = 0; i < req.body.area.slots.length; i++) {
+        if (req.body.area.slots[i] < 0.5) {
+            req.body.area.slots[i] = 0;
+        }
+        else {
+            req.body.area.slots[i] = 1;
+        }
+    }
+
 
     let slot_content = await plfunc.check_slot_single(req.body, req.params.parkingId);
     let content = {
@@ -441,4 +450,40 @@ exports.updateAreaSlot = async (req, res) => {
                 message: "Error updating Parking Lot with id " + req.params.parkingId
             });
         });
+};
+
+// Delete Area in Parkinglot
+exports.deleteArea = async (req, res) => {
+
+    let bookingArray = await bookingfunc.findCurrentBookingByParkingandArea(req.params.parkingId, req.body.area.name);
+    for (ih = 0; ih < bookingArray.length; ih++) {
+        // console.log(bookingArray[ih]._id);
+        await bookingfunc.cancel_booking(bookingArray[ih]._id);
+    }
+
+    await ParkingLot.updateOne({ _id: req.params.parkingId }, { $pull: { area: { name: req.body.area.name } } })
+
+    const result = await plfunc.cal_status_func(req.params.parkingId)
+
+
+    if (bookingArray.length == 0) {
+        let content = {
+            $set: { "status": result }
+        }
+
+        await ParkingLot.findOneAndUpdate({ _id: req.params.parkingId },
+            content, { new: true })
+
+    }
+    res.send({ message: "Deleted Area" });
+};
+
+// Chage Area Price in Parkinglot
+exports.changeAreaPrice = async (req, res) => {
+
+    await ParkingLot.updateOne({ _id: req.params.parkingId, "area.name": req.body.area.name }, 
+    { $set: { "area.$.price": req.body.area.price } }, 
+    { new: true })
+
+    res.send({ message: "Changed Area Price" });
 };

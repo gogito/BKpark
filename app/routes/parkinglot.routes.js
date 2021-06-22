@@ -432,4 +432,89 @@ app.delete('/parkinglots/:parkingId', parkinglots.delete_for_owner);
 
  app.put('/parkinglots/:parkingId/area/slot', parkinglots.updateAreaSlot);
 
+    // Add area in a Parkinglot with ParkingId
+
+/**
+ * @swagger
+ * /parkinglots/{id}/area:
+ *   delete:
+ *     summary: Delete an area in a Parkinglot with ParkingId
+ *     tags: [Parkinglots]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The Parkinglot id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             properties:
+ *                    area:
+ *                      type: object
+ *                      properties:
+ *                        name:
+ *                          type: string
+ *                       
+ *     responses:
+ *       200:
+ *         description: The Parkinglot description by id after update
+ *         contens:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Parkinglot'
+ *       404:
+ *         description: The Parkinglot was not found
+ */
+
+
+ app.delete('/parkinglots/:parkingId/area', parkinglots.deleteArea);
+
+
+    // Add area in a Parkinglot with ParkingId
+
+/**
+ * @swagger
+ * /parkinglots/{id}/area/price:
+ *   put:
+ *     summary: Change an area Price in a Parkinglot with ParkingId
+ *     tags: [Parkinglots]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The Parkinglot id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             properties:
+ *                    area:
+ *                      type: object
+ *                      properties:
+ *                        name:
+ *                          type: string
+ *                        price:
+ *                          type: string
+ *                       
+ *     responses:
+ *       200:
+ *         description: The Parkinglot description by id after update
+ *         contens:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Parkinglot'
+ *       404:
+ *         description: The Parkinglot was not found
+ */
+
+
+ app.put('/parkinglots/:parkingId/area/price', parkinglots.changeAreaPrice);
+
 }
