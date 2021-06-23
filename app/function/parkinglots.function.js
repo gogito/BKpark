@@ -223,7 +223,7 @@ exports.delete_for_owner = async (parkingId) => {
 
 };
 
-exports.extract_area_from_parkinglot = async (parkinglot) => {
+exports.extract_area_from_parkinglot = (parkinglot) => {
 
     var returnArray = [];
     for (let i = 0; i < parkinglot.area.length; i++) {
