@@ -365,7 +365,7 @@ exports.updateAreaSlot = async (req, res) => {
         edge_id: req.body.edge_id,
         parkinglotID: req.params.parkingId, 
         time: {
-            sent: received_time,
+            sent: req.body.time.sent,
             received: received_time
         },
         areaName: req.body.area.name,

@@ -1,32 +1,12 @@
 const ParkingLot = require('../models/parkinglot.model.js');
 const plfunc = require('../function/parkinglots.function.js');
 
-   // Find Parking Lot and update it with the request body
-exports.test = async (req, res) => {
- 
-    
-
-    let content =  await plfunc.check_slot(req.body.info, req.params.parkingId);
-
-
-
-    if (req.body.infoArray !== undefined && req.body.info !== undefined) {
-        content = {
-            $set: req.body.info,
-            $addToSet: req.body.infoArray
-        }
+exports.getAreainfo = async (req, res) => {
+    var finalArray = [];
+    let parkinglotArray = await ParkingLot.find().lean().exec();
+    for (let n = 0; n < parkinglotArray.length; n++) {
+    finalArray =  finalArray.concat( await plfunc.extract_area_from_parkinglot(parkinglotArray[n]));
     }
-    else if (req.body.info !== undefined) {
-        content = {
-            $set: req.body.info
-        }
-    }
-
-    else {
-        content = {
-            $addToSet: req.body.infoArray
-        }
-    }
-    
-    res.send(content);
+    res.send(finalArray);
+        
 };

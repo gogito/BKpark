@@ -168,27 +168,27 @@ exports.getParkinglotName_all = async () => {
     let current_owner_array = await Owner.find().lean().exec();
 
     for (j = 0; j < current_owner_array.length; j++) {
-  
+
         current_owner_array[j] = await this.getParkinglotName(current_owner_array[j]._id);
-        
+
     }
- 
+
     return current_owner_array;
 
 }
 
 exports.getParkinglotName = async (ownerID) => {
-    
+
     var parking_lot_name_array_lean = [];
     let current_owner = await Owner.findById(ownerID).lean().exec();
     let parkinglot_ID_array = current_owner.ownedParking;
 
     if (parkinglot_ID_array.length > 0) {
-        
+
         let parkinglot_name_array = await ParkingLot.find({ _id: { $in: parkinglot_ID_array } }, { name: 1, _id: 0 }).lean().exec()
 
         for (i = 0; i < parkinglot_name_array.length; i++) {
-      
+
             parking_lot_name_array_lean[i] = parkinglot_name_array[i].name;
         }
         current_owner.ownedParkingName = parking_lot_name_array_lean;
@@ -197,7 +197,7 @@ exports.getParkinglotName = async (ownerID) => {
 }
 
 exports.delete_for_owner = async (parkingId) => {
-    
+
     var bookingID_array = [];
 
 
@@ -208,17 +208,34 @@ exports.delete_for_owner = async (parkingId) => {
             bookingID_array[i] = booking_array[i]._id;
         }
 
-     
+
         await bookingfunc.clearBookingfromUser(bookingID_array);
 
         await Booking.deleteMany({ _id: { $in: bookingID_array } }).exec();
     }
     let cur_ownerID = await ParkingLot.find({ _id: parkingId }, { ownerID: 1 })
 
-   
+
     await this.unlink_parkinglot_owner(parkingId, cur_ownerID[0].ownerID);
 
     await ParkingLot.deleteOne({ _id: parkingId })
-  
 
+
+};
+
+exports.extract_area_from_parkinglot = async (parkinglot) => {
+
+    var returnArray = [];
+    for (let i = 0; i < parkinglot.area.length; i++) {
+  
+        returnArray.push(
+            {
+                "parkinglotID": parkinglot._id,
+                "name": parkinglot.area[i].name,
+                "slot_number": parkinglot.area[i].slots.length
+            }
+        )
+    }
+
+    return returnArray;
 };
