@@ -3,7 +3,7 @@ const plfunc = require('../function/parkinglots.function.js');
 const bookingfunc = require('../function/booking.function.js');
 const Owner = require('../models/owner.model.js');
 const Booking = require('../models/booking.model.js');
-
+const Request = require('../models/request.model.js');
 // Create and Save a new ParkingLot
 exports.create = (req, res) => {
     // Validate request
@@ -358,6 +358,29 @@ exports.addArea = async (req, res) => {
 
 // Update area SLOT in a Parkinglot with ParkingId
 exports.updateAreaSlot = async (req, res) => {
+    let received_time = bookingfunc.getTime();
+
+     // Create a Request
+     const request = new Request({
+        edge_id: req.body.edge_id,
+        parkinglotID: req.params.parkingId, 
+        time: {
+            sent: received_time,
+            received: received_time
+        },
+        areaName: req.body.area.name,
+        slots: req.body.area.slots
+    });
+
+    // Save Request in the database
+    request.save().catch(err => {
+            res.status(500).send({
+                message: err.message || "Some error occurred while creating the Request."
+            });
+        });
+
+
+
     for (i = 0; i < req.body.area.slots.length; i++) {
         if (req.body.area.slots[i] < 0.5) {
             req.body.area.slots[i] = 0;

@@ -408,6 +408,13 @@ app.delete('/parkinglots/:parkingId', parkinglots.delete_for_owner);
  *         application/json:
  *           schema:
  *             properties:
+ *                    edge_id:
+ *                     type: string
+ *                    time:
+ *                     type: object
+ *                     properties:
+ *                         sent:
+ *                          type: string
  *                    area:
  *                      type: object
  *                      properties:

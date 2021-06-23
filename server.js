@@ -85,7 +85,10 @@ require('./app/routes/admin_register.routes.js')(app);
 require('./app/routes/ownerlogin.routes.js')(app);
 require('./app/routes/owner.routes.js')(app);
 
-// listen for requests
+//Request Route
+require('./app/routes/request.routes.js')(app);
+
+// Listen for requests
 app.listen(3002, () => {
     console.log("Server is listening on port 3002");
 });
