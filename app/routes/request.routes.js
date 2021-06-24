@@ -1,6 +1,7 @@
 module.exports = (app) => {
     const requests = require('../controllers/request.controller.js');
- /**
+
+    /**
      * @swagger
      * components:
      *   schemas:
@@ -32,11 +33,9 @@ module.exports = (app) => {
      *           description: The request Area
      *         slots:
      *           type: array
-     *           item: 
-     *              type: integer       
-     *           description: The admin Password
-     *          
-     *        
+     *           items:
+     *              type: integer
+     *           description: The slots
      */
 
 /**
@@ -61,7 +60,50 @@ module.exports = (app) => {
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Admin'
+ *                 $ref: '#/components/schemas/Request'
  */
     app.get('/requests', requests.findAll);
+
+    // Retrieve all Requests
+
+    /**
+ * @swagger
+ * /requests/total:
+ *   get:
+ *     summary: Returns the total number of requests
+ *     tags: [Requests]
+ *     responses:
+ *       200:
+ *         description: The total number of the requests
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Request'
+ */
+     app.get('/requests/total', requests.getTotal);
+
+
+    // Get request count
+
+    /**
+ * @swagger
+ * /requests/count:
+ *   get:
+ *     summary: Returns the count of requests based on Edge_ID and Parkinglot_ID
+ *     tags: [Requests]
+ *     responses:
+ *       200:
+ *         description: The count of the requests
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Request'
+ */
+     app.get('/requests/count', requests.getCount);
+
+
 }
