@@ -48,12 +48,33 @@ module.exports = (app) => {
  *               items:
  *                 $ref: '#/components/schemas/Area'
  */
-   // Find Parking Lot and update it with the request body
-
-
 
     // Get parkinglot area information for update
     app.get('/test/areaname', test.getAreainfo);
 
+    
 
+    // Simulate multiple Edge 
+
+/**
+ * @swagger
+ * /test/simulate-edge:
+ *   get:
+ *     summary: Start sending update to area to simulate multiple edge devices
+ *     tags: [Tests]
+ *     responses:
+ *       200:
+ *         description: Started process
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Area'
+ */
+
+    // Get parkinglot area information for update
+    app.get('/test/simulate-edge', test.simulate_edge);
+
+    
 }

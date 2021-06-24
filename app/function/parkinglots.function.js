@@ -2,6 +2,7 @@ const ParkingLot = require('../models/parkinglot.model.js');
 const Owner = require('../models/owner.model.js');
 const bookingfunc = require('../function/booking.function.js');
 const Booking = require('../models/booking.model.js');
+const fetch = require('node-fetch');
 exports.cal_status_func = async (id) => {
 
     var full_num = 0;
@@ -227,7 +228,7 @@ exports.extract_area_from_parkinglot = (parkinglot) => {
 
     var returnArray = [];
     for (let i = 0; i < parkinglot.area.length; i++) {
-  
+
         returnArray.push(
             {
                 "parkinglotID": parkinglot._id,
@@ -239,3 +240,42 @@ exports.extract_area_from_parkinglot = (parkinglot) => {
 
     return returnArray;
 };
+
+exports.send_update = (area) => {
+    
+    let current_time = bookingfunc.getTimeMS();
+    var slots_array = [];
+    for (let k = 0; k < area.slot_number; k++) {
+        let o = this.getRandomIntInclusive(0, 1);
+        slots_array[k] = o;
+    }
+    let simulate_edge_id = 'Edge ' + area.name;
+    var data = {
+        edge_id: simulate_edge_id,
+        time: {
+            sent: current_time
+        },
+        area: {
+            name: area.name,
+            slots: slots_array
+        }
+    }
+
+    
+
+    fetch('http://localhost:3002/parkinglots/' + area.parkinglotID + '/area/slot', {
+        method: 'PUT',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+        body: JSON.stringify(data)
+    })
+    return 1;
+}
+
+exports.getRandomIntInclusive = (min, max) => {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1) + min); //The maximum is inclusive and the minimum is inclusive
+}

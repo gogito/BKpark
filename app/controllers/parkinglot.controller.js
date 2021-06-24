@@ -358,6 +358,7 @@ exports.addArea = async (req, res) => {
 
 // Update area SLOT in a Parkinglot with ParkingId
 exports.updateAreaSlot = async (req, res) => {
+ 
     let received_time = bookingfunc.getTimeMS();
 
      // Create a Request
