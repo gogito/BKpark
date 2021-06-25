@@ -20,14 +20,18 @@ exports.simulate_edge = async (req, res) => {
         finalArray = finalArray.concat(plfunc.extract_area_from_parkinglot(parkinglotArray[n]));
     }
 
-    for (g = 0; g < 10; g++) {
-        
-        for (u = 0; u < 100000; u++) {
-            await this.sleep(1000);
-            let random = plfunc.getRandomIntInclusive(0, (finalArray.length - 1));
+
+    for (u = 0; u < 232; u++) {
+        // await this.sleep(1);
+        let random = plfunc.getRandomIntInclusive(0, (finalArray.length - 1));
+        // for (let e = 0; e < 2; e++) {
             plfunc.send_update(finalArray[random]);
-        }
+        // }
+        // plfunc.get_test();
+
+
     }
+
 };
 
 exports.sleep = (ms) => {

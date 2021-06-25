@@ -279,3 +279,15 @@ exports.getRandomIntInclusive = (min, max) => {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1) + min); //The maximum is inclusive and the minimum is inclusive
 }
+
+exports.get_test = () => {
+    
+    fetch('http://localhost:3002/users', {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+    })
+    return 1;
+}

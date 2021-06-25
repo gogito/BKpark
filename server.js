@@ -92,3 +92,12 @@ require('./app/routes/request.routes.js')(app);
 app.listen(3002, () => {
     console.log("Server is listening on port 3002");
 });
+
+
+// app.getConnections(function(error, count) {
+
+//     console.log(count);
+
+// });
+
+

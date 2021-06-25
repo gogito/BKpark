@@ -372,14 +372,14 @@ exports.updateAreaSlot = async (req, res) => {
         areaName: req.body.area.name,
         slots: req.body.area.slots
     });
-
+    // console.log(request);
     // Save Request in the database
     request.save().catch(err => {
             res.status(500).send({
                 message: err.message || "Some error occurred while creating the Request."
             });
         });
-
+        
 
 
     for (i = 0; i < req.body.area.slots.length; i++) {
