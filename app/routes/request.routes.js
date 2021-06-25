@@ -105,5 +105,30 @@ module.exports = (app) => {
  */
      app.get('/requests/count', requests.getCount);
 
+    // Get request count for specific owner
 
+    /**
+ * @swagger
+ * /requests/count/{ownerID}:
+ *   get:
+ *     summary: Returns the count of requests based on Edge_ID and Parkinglot_ID for specific OWNER
+ *     tags: [Requests]
+ *     parameters:
+ *       - in: path
+ *         name: ownerID
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The owner id
+ *     responses:
+ *       200:
+ *         description: The count of the requests
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Request'
+ */
+     app.get('/requests/count/:ownerID', requests.getCountOwner);
 }
