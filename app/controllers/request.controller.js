@@ -69,7 +69,7 @@ exports.getCount = async (req, res) => {
                 }
             )
         }
-
+        let total = request_array.length;
 
         for (let j = 0; j < parkinglot_array.length; j++) {
 
@@ -84,17 +84,15 @@ exports.getCount = async (req, res) => {
         }
 
         res.send(
-            {
+            {   "total_request": total,
                 total_edge_id_array,
-
+                
                 total_parkinglot_array
 
             }
         )
 
     });
-
-
 
 };
 
@@ -130,7 +128,7 @@ exports.getCountOwner = async (req, res) => {
         edge_id_array[i] = request_array[i].edge_id;
 
     }
-
+    let total = request_array.length;
     const uniqueset = new Set(edge_id_array)
 
     edge_id_array = [...uniqueset];
@@ -157,9 +155,9 @@ exports.getCountOwner = async (req, res) => {
         )
     }
     res.send(
-        {
+        {   "total_request": total,
             total_edge_id_array,
-
+        
             total_parkinglot_array
 
         }
