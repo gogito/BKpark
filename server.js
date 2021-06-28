@@ -52,6 +52,9 @@ const swaggerOptions = {
 			{
 				url: "http://bkparking.ddns.net:3002",
 			},
+            {
+				url: "http://localhost:3002",
+			},
 		],
 	},
 	apis: ["./app/routes/*.js"],

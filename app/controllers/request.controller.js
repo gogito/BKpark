@@ -25,141 +25,94 @@ exports.getTotal = (req, res) => {
 };
 
 // Return count of request
-exports.getCount = async (req, res) => {
-    var edge_id_array = [];
-
-    var parkinglot_array = [];
-
-    var request_array = [];
-
+exports.getCountFast = async (req, res) => {
     var total_edge_id_array = [];
-
     var total_parkinglot_array = [];
-
-    var promise1 = Request.find().lean().exec();
+    var promise1 = Request.find({}, {slots: 0, areaName: 0}).lean().exec();
     var promise2 = Parkinglot.find({}, { name: 1 }).lean().exec();
-
     await Promise.all([promise1, promise2]).then(function (value) {
-
-        request_array = value[0];
-        parkinglot_array = value[1];
-
-
-        for (let i = 0; i < request_array.length; i++) {
-            edge_id_array[i] = request_array[i].edge_id;
-        }
-
-
-
-        const uniqueset = new Set(edge_id_array)
-
-
-        edge_id_array = [...uniqueset];
-
-
-
-
-        for (let j = 0; j < edge_id_array.length; j++) {
-
-            var count = request_array.filter((obj) => obj.edge_id === edge_id_array[j]).length;
-            total_edge_id_array.push(
-                {
-                    "edge_id": edge_id_array[j],
-                    "count": count
-                }
-            )
-        }
-        let total = request_array.length;
-
-        for (let j = 0; j < parkinglot_array.length; j++) {
-
-            var count = request_array.filter((obj) => obj.parkinglotID == parkinglot_array[j]._id).length;
+        let request_array = value[0];
+        let parkinglot_array = value[1];
+        for (let i = 0; i < parkinglot_array.length; i++) {
             total_parkinglot_array.push(
                 {
-                    "parkinglotID": parkinglot_array[j]._id,
-                    "name": parkinglot_array[j].name,
-                    "count": count
+                    "parkinglotID": parkinglot_array[i]._id,
+                    "name": parkinglot_array[i].name,
+                    "count": 0
                 }
             )
         }
-
+        for (let i = 0; i < request_array.length; i++) {
+            let u = total_parkinglot_array.findIndex(element => element.parkinglotID == request_array[i].parkinglotID);
+            total_parkinglot_array[u].count = total_parkinglot_array[u].count + 1;
+            let e = total_edge_id_array.findIndex(element => element.edge_id == request_array[i].edge_id);
+            if (e == -1) {
+                total_edge_id_array.push(
+                    {
+                        "edge_id": request_array[i].edge_id,
+                        "count": 1
+                    }
+                )
+            }
+            else {
+                total_edge_id_array[e].count = total_edge_id_array[e].count + 1;
+            }
+        }
         res.send(
-            {   "total_request": total,
+            {
+                "total_request": request_array.length,
                 total_edge_id_array,
-                
                 total_parkinglot_array
-
             }
         )
-
     });
-
 };
 
 // Return count of request for specific owner
-exports.getCountOwner = async (req, res) => {
-    console.log(req.params.ownerID);
-    var edge_id_array = [];
-
-    var parkinglot_array = [];
-
-    var request_array = [];
-
+exports.getCountOwnerFast = async (req, res) => {
     var total_edge_id_array = [];
-
     var total_parkinglot_array = [];
-
     var parkinglot_id_array = [];
+    let parkinglot_array = await Parkinglot.find({ ownerID: req.params.ownerID }, { name: 1 }).lean().exec();
+    for (i = 0; i < parkinglot_array.length; i++) {
 
-    let promise2 = await Parkinglot.find({ ownerID: req.params.ownerID }, { name: 1 }).lean().exec();
-
-    for (i = 0; i < promise2.length; i++) {
-
-        parkinglot_id_array[i] = promise2[i]._id
+        parkinglot_id_array[i] = parkinglot_array[i]._id
 
     }
-
-    let promise1 = await Request.find({ parkinglotID: { $in: parkinglot_id_array } }).lean().exec();
-
-    request_array = promise1;
-    parkinglot_array = promise2;
-
-    for (let i = 0; i < request_array.length; i++) {
-        edge_id_array[i] = request_array[i].edge_id;
-
-    }
-    let total = request_array.length;
-    const uniqueset = new Set(edge_id_array)
-
-    edge_id_array = [...uniqueset];
-
-    for (let j = 0; j < edge_id_array.length; j++) {
-
-        var count = request_array.filter((obj) => obj.edge_id === edge_id_array[j]).length;
-        total_edge_id_array.push(
-            {
-                "edge_id": edge_id_array[j],
-                "count": count
-            }
-        )
-    }
-    for (let j = 0; j < parkinglot_array.length; j++) {
-
-        var count = request_array.filter((obj) => obj.parkinglotID == parkinglot_array[j]._id).length;
-        total_parkinglot_array.push(
-            {
-                "parkinglotID": parkinglot_array[j]._id,
-                "name": parkinglot_array[j].name,
-                "count": count
-            }
-        )
-    }
-    res.send(
-        {   "total_request": total,
-            total_edge_id_array,
-        
-            total_parkinglot_array
-
+    let request_array = await Request.find({ parkinglotID: { $in: parkinglot_id_array } }).lean().exec();
+     
+        for (let i = 0; i < parkinglot_array.length; i++) {
+            total_parkinglot_array.push(
+                {
+                    "parkinglotID": parkinglot_array[i]._id,
+                    "name": parkinglot_array[i].name,
+                    "count": 0
+                }
+            )
         }
-    )
+        for (let i = 0; i < request_array.length; i++) {
+            let u = total_parkinglot_array.findIndex(element => element.parkinglotID == request_array[i].parkinglotID);
+            total_parkinglot_array[u].count = total_parkinglot_array[u].count + 1;
+            let e = total_edge_id_array.findIndex(element => element.edge_id == request_array[i].edge_id);
+            if (e == -1) {
+                total_edge_id_array.push(
+                    {
+                        "edge_id": request_array[i].edge_id,
+                        "count": 1
+                    }
+                )
+            }
+            else {
+                total_edge_id_array[e].count = total_edge_id_array[e].count + 1;
+            }
+        }
+        res.send(
+            {
+                "total_request": request_array.length,
+                total_edge_id_array,
+                total_parkinglot_array
+            }
+        )
+    
 };
+

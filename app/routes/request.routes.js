@@ -103,7 +103,7 @@ module.exports = (app) => {
  *               items:
  *                 $ref: '#/components/schemas/Request'
  */
-     app.get('/requests/count', requests.getCount);
+     app.get('/requests/count', requests.getCountFast);
 
     // Get request count for specific owner
 
@@ -130,5 +130,5 @@ module.exports = (app) => {
  *               items:
  *                 $ref: '#/components/schemas/Request'
  */
-     app.get('/requests/count/:ownerID', requests.getCountOwner);
+     app.get('/requests/count/:ownerID', requests.getCountOwnerFast);
 }
