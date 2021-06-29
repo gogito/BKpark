@@ -68,13 +68,10 @@ exports.unbook_slot = async (bookingID) => {
 
         data = await ParkingLot.findById(parkingID).lean();
 
-
-
         for (let i = 0; i < data.area.length; i++) {
 
             if (data.area[i].name == areaName) {
               
-
                 data.area[i].slots[slot_id] = 0;
                 data.area[i].fullslot -= 1;
                 data.area[i].freeslot += 1;
@@ -99,14 +96,13 @@ exports.unbook_slot = async (bookingID) => {
                         });
                     });
 
-
                 const result = await plfunc.cal_status_func(parkingID)
 
                 content = {
                     $set: { "status": result }
                 }
 
-                await ParkingLot.findOneAndUpdate({ _id: parkingID },
+                ParkingLot.findOneAndUpdate({ _id: parkingID },
                     content, { new: true })
                     .then(parkinglot => {
                         if (!parkinglot) {
@@ -129,8 +125,6 @@ exports.unbook_slot = async (bookingID) => {
                 return true;
 
             }
-
-
 
         }
 
