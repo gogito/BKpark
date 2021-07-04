@@ -14,6 +14,18 @@ exports.findAll = (req, res) => {
         });
 };
 
+// Retrieve and return all users NOT BOOKED from the database.
+exports.findAllnotBooked = (req, res) => {
+    User.find({currentBooking: ""}).lean()
+        .then(users => {
+            res.send(users);
+        }).catch(err => {
+            res.status(500).send({
+                message: err.message || "Some error occurred while retrieving users."
+            });
+        });
+};
+
 // Find a single user with a UserId
 exports.findOne = (req, res) => {
     User.findById(req.params.userId)

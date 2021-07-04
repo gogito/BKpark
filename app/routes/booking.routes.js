@@ -200,4 +200,28 @@ module.exports = (app) => {
 
     app.put('/bookings/:bookingID', bookings.put);
 
+
+    // Retrieve all CURRENT Bookings
+
+/**
+ * @swagger
+ * /currentbookings:
+ *   get:
+ *     summary: Returns the list of all the bookings current Booked
+ *     tags: [Bookings]
+ *     responses:
+ *       200:
+ *         description: The list of the bookings
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Booking'
+ */
+
+ app.get('/currentbookings', bookings.findAllcurrent);
+
+
+
 }

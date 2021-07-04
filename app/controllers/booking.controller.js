@@ -228,3 +228,19 @@ exports.put = async (req, res) => {
         });
 
 };
+
+// Retrieve and return all Booking from the database.
+exports.findAllcurrent = async (req, res) => {
+
+
+    let bookingArray = await Booking.find({status:"Booked"}).lean();
+    // .then(bookings => {
+    //     // res.send(bookings);
+    // }).catch(err => {
+    //     res.status(500).send({
+    //         message: err.message || "Some error occurred while retrieving Bookings."
+    //     });
+    // });
+    let finalArray = await bookingfunc.getName(bookingArray);
+    res.send(finalArray);
+};

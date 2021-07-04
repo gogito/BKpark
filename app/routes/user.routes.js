@@ -233,4 +233,30 @@ module.exports = (app) => {
  *         description: The user was not found
  */
  app.get('/users/:userId/booking', users.find_booking_by_userID);
+
+
+    // Retrieve all Users that is not currently Booked
+
+/**
+ * @swagger
+ * /usersfree:
+ *   get:
+ *     summary: Returns the list of all the users not booked
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: The list of the users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
+ */
+
+
+ app.get('/usersfree', users.findAllnotBooked);
+
+
+
 }
