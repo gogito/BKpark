@@ -135,9 +135,12 @@ exports.findAll = async (req, res) => {
 exports.findOne = async (req, res) => {
 
     let currentBooking = await Booking.findById(req.params.bookingId).lean()
-    let currentParkinglot = await Parkinglot.findById(currentBooking.parkinglotID)
+    let booking_single_aray = [];
+    booking_single_aray[0] = currentBooking;
+    let finalArray = await bookingfunc.getName(booking_single_aray);
+    // let currentParkinglot = await Parkinglot.findById(currentBooking.parkinglotID)
 
-    currentBooking.ParkinglotName = currentParkinglot.name;
+    // currentBooking.ParkinglotName = currentParkinglot.name;
 
     // .then(booking => {
     //     if (!booking) {
@@ -155,7 +158,7 @@ exports.findOne = async (req, res) => {
     //         message: "Error retrieving Booking with id " + req.params.bookingId
     //     });
     // });
-    res.send(currentBooking);
+    res.send(finalArray[0]);
 
 };
 
