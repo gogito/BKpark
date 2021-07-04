@@ -3,13 +3,15 @@ module.exports = (app) => {
     const rateLimit = require("express-rate-limit");
 
     const bookingLimiter = rateLimit({
-        windowMs: 10 * 1000, // 1 hour window
+        windowMs: 5*1000, // 5 minutes window
         max: 1, // start blocking after 5 requests
-        message:
-          "Too many accounts created from this IP, please try again after an hour"
-      });
-
-
+        message: {
+            message: "Too many booking created from this User, please try again after 5 seconds",
+        },
+        keyGenerator: function (req /*, res*/) {
+            return req.body.userID;
+        }
+    });
 
     /**
      * @swagger
@@ -49,153 +51,153 @@ module.exports = (app) => {
 
 
 
- /**
-  * @swagger
-  * tags:
-  *   name: Bookings
-  *   description: The Bookings managing API
-  */
+    /**
+     * @swagger
+     * tags:
+     *   name: Bookings
+     *   description: The Bookings managing API
+     */
 
 
     // Retrieve all Booking
 
-/**
- * @swagger
- * /bookings:
- *   get:
- *     summary: Returns the list of all the bookings
- *     tags: [Bookings]
- *     responses:
- *       200:
- *         description: The list of the bookings
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Booking'
- */
+    /**
+     * @swagger
+     * /bookings:
+     *   get:
+     *     summary: Returns the list of all the bookings
+     *     tags: [Bookings]
+     *     responses:
+     *       200:
+     *         description: The list of the bookings
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: array
+     *               items:
+     *                 $ref: '#/components/schemas/Booking'
+     */
 
     app.get('/bookings', bookings.findAll);
 
     // Retrieve One Booking
 
-/**
- * @swagger
- * /bookings/{id}:
- *   get:
- *     summary: Get the booking by id
- *     tags: [Bookings]
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
- *         required: true
- *         description: The booking id
- *     responses:
- *       200:
- *         description: The booking description by id
- *         contens:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Booking'
- *       404:
- *         description: The booking was not found
- */
+    /**
+     * @swagger
+     * /bookings/{id}:
+     *   get:
+     *     summary: Get the booking by id
+     *     tags: [Bookings]
+     *     parameters:
+     *       - in: path
+     *         name: id
+     *         schema:
+     *           type: string
+     *         required: true
+     *         description: The booking id
+     *     responses:
+     *       200:
+     *         description: The booking description by id
+     *         contens:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Booking'
+     *       404:
+     *         description: The booking was not found
+     */
 
 
     app.get('/bookings/:bookingId', bookings.findOne);
 
     // Add new Booking
 
-/**
- * @swagger
- * /bookings:
- *   post:
- *     summary: Make a new booking
- *     tags: [Bookings]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             properties:            
- *              userID:
- *                type: string
- *              parkinglotID:
- *                type: string
- *              areaName:
- *                type: string
- *     responses:
- *       200:
- *         description: The bookingr description by id after booked
- *         contens:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Booking'
- *       404:
- *         description: Could not book
- */    
+    /**
+     * @swagger
+     * /bookings:
+     *   post:
+     *     summary: Make a new booking
+     *     tags: [Bookings]
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             properties:            
+     *              userID:
+     *                type: string
+     *              parkinglotID:
+     *                type: string
+     *              areaName:
+     *                type: string
+     *     responses:
+     *       200:
+     *         description: The bookingr description by id after booked
+     *         contens:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Booking'
+     *       404:
+     *         description: Could not book
+     */
 
 
 
-    app.post('/bookings', bookingLimiter,  bookings.create);
+    app.post('/bookings', bookingLimiter, bookings.create);
 
     // Cancel Booking
 
-/**
- * @swagger
- * /bookings/{id}:
- *   delete:
- *     summary: Cancel the booking by id
- *     tags: [Bookings]
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
- *         required: true
- *         description: The booking id
- *     responses:
- *       200:
- *         description: The user description of the user that cancelled the booking
- *         contens:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Booking'
- *       404:
- *         description: The booking was not found
- */
+    /**
+     * @swagger
+     * /bookings/{id}:
+     *   delete:
+     *     summary: Cancel the booking by id
+     *     tags: [Bookings]
+     *     parameters:
+     *       - in: path
+     *         name: id
+     *         schema:
+     *           type: string
+     *         required: true
+     *         description: The booking id
+     *     responses:
+     *       200:
+     *         description: The user description of the user that cancelled the booking
+     *         contens:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Booking'
+     *       404:
+     *         description: The booking was not found
+     */
 
 
     app.delete('/bookings/:bookingID', bookings.delete);
 
     // Complete Booking
 
-/**
- * @swagger
- * /bookings/{id}:
- *   put:
- *     summary: Complete the booking by id
- *     tags: [Bookings]
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
- *         required: true
- *         description: The booking id
- *     responses:
- *       200:
- *         description: The user description of the user that completed the booking
- *         contens:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Booking'
- *       404:
- *         description: The booking was not found
- */
+    /**
+     * @swagger
+     * /bookings/{id}:
+     *   put:
+     *     summary: Complete the booking by id
+     *     tags: [Bookings]
+     *     parameters:
+     *       - in: path
+     *         name: id
+     *         schema:
+     *           type: string
+     *         required: true
+     *         description: The booking id
+     *     responses:
+     *       200:
+     *         description: The user description of the user that completed the booking
+     *         contens:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Booking'
+     *       404:
+     *         description: The booking was not found
+     */
 
 
     app.put('/bookings/:bookingID', bookings.put);
@@ -203,24 +205,24 @@ module.exports = (app) => {
 
     // Retrieve all CURRENT Bookings
 
-/**
- * @swagger
- * /currentbookings:
- *   get:
- *     summary: Returns the list of all the bookings current Booked
- *     tags: [Bookings]
- *     responses:
- *       200:
- *         description: The list of the bookings
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Booking'
- */
+    /**
+     * @swagger
+     * /currentbookings:
+     *   get:
+     *     summary: Returns the list of all the bookings current Booked
+     *     tags: [Bookings]
+     *     responses:
+     *       200:
+     *         description: The list of the bookings
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: array
+     *               items:
+     *                 $ref: '#/components/schemas/Booking'
+     */
 
- app.get('/currentbookings', bookings.findAllcurrent);
+    app.get('/currentbookings', bookings.findAllcurrent);
 
 
 
