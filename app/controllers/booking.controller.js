@@ -3,7 +3,7 @@ const bookingfunc = require('../function/booking.function.js');
 const User = require('../models/user.model.js');
 const Parkinglot = require('../models/parkinglot.model.js');
 const plfunc = require('../function/parkinglots.function.js');
-const queue = require('express-queue');
+
 // Create and Save a new Booking
 exports.create = async (req, res) => {
     let time = bookingfunc.getTime();
@@ -120,13 +120,6 @@ exports.findAll = async (req, res) => {
 
 
     let bookingArray = await Booking.find().lean();
-    // .then(bookings => {
-    //     // res.send(bookings);
-    // }).catch(err => {
-    //     res.status(500).send({
-    //         message: err.message || "Some error occurred while retrieving Bookings."
-    //     });
-    // });
     let finalArray = await bookingfunc.getName(bookingArray);
     res.send(finalArray);
 };
@@ -138,26 +131,7 @@ exports.findOne = async (req, res) => {
     let booking_single_aray = [];
     booking_single_aray[0] = currentBooking;
     let finalArray = await bookingfunc.getName(booking_single_aray);
-    // let currentParkinglot = await Parkinglot.findById(currentBooking.parkinglotID)
 
-    // currentBooking.ParkinglotName = currentParkinglot.name;
-
-    // .then(booking => {
-    //     if (!booking) {
-    //         return res.status(404).send({
-    //             message: "Booking not found with id " + req.params.bookingId
-    //         });
-    //     }
-    // }).catch(err => {
-    //     if (err.kind === 'ObjectId') {
-    //         return res.status(404).send({
-    //             message: "Booking not found with id " + req.params.bookingId
-    //         });
-    //     }
-    //     return res.status(500).send({
-    //         message: "Error retrieving Booking with id " + req.params.bookingId
-    //     });
-    // });
     res.send(finalArray[0]);
 
 };
