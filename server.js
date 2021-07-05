@@ -35,7 +35,7 @@ mongoose.connect(dbConfig.url, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then(() => {
-    console.log("Successfully connected to the database");
+    console.log("BKPark Server successfully connected to the database");
 }).catch(err => {
     console.log('Could not connect to the database. Exiting now...', err);
     process.exit();
@@ -95,7 +95,7 @@ require('./app/routes/request.routes.js')(app);
 
 // Listen for requests
 app.listen(3002, () => {
-    console.log("Server is listening on port 3002");
+    console.log("BKPark Server is listening on port 3002");
 });
 
 
