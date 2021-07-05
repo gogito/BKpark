@@ -3,7 +3,7 @@ const bookingfunc = require('../function/booking.function.js');
 const User = require('../models/user.model.js');
 const Parkinglot = require('../models/parkinglot.model.js');
 const plfunc = require('../function/parkinglots.function.js');
-
+const queue = require('express-queue');
 // Create and Save a new Booking
 exports.create = async (req, res) => {
     let time = bookingfunc.getTime();

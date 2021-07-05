@@ -1,17 +1,17 @@
 module.exports = (app) => {
     const bookings = require('../controllers/booking.controller.js');
     const rateLimit = require("express-rate-limit");
-
-    const bookingLimiter = rateLimit({
-        windowMs: 5*1000, // 5 minutes window
-        max: 1, // start blocking after 5 requests
-        message: {
-            message: "Too many booking created from this User, please try again after 5 seconds",
-        },
-        keyGenerator: function (req /*, res*/) {
-            return req.body.userID;
-        }
-    });
+    const queue = require('express-queue');
+    // const bookingLimiter = rateLimit({
+    //     windowMs: 5*1000, // 5 minutes window
+    //     max: 1, // start blocking after 5 requests
+    //     message: {
+    //         message: "Too many booking created from this User, please try again after 5 seconds",
+    //     },
+    //     keyGenerator: function (req /*, res*/) {
+    //         return req.body.userID;
+    //     }
+    // });
 
     /**
      * @swagger
@@ -142,7 +142,7 @@ module.exports = (app) => {
 
 
 
-    app.post('/bookings', bookingLimiter, bookings.create);
+    app.post('/bookings', queue({ activeLimit: 1, queuedLimit: -1 }), bookings.create);
 
     // Cancel Booking
 
@@ -171,7 +171,7 @@ module.exports = (app) => {
      */
 
 
-    app.delete('/bookings/:bookingID', bookings.delete);
+    app.delete('/bookings/:bookingID',queue({ activeLimit: 1, queuedLimit: -1 }), bookings.delete);
 
     // Complete Booking
 
@@ -200,7 +200,7 @@ module.exports = (app) => {
      */
 
 
-    app.put('/bookings/:bookingID', bookings.put);
+    app.put('/bookings/:bookingID', queue({ activeLimit: 1, queuedLimit: -1 }),bookings.put);
 
 
     // Retrieve all CURRENT Bookings
