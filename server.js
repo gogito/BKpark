@@ -6,7 +6,7 @@ const queue = require('express-queue');
 // create express app
 const app = express();
 
-app.use(queue({ activeLimit: 1, queuedLimit: -1 }));
+// app.use(queue({ activeLimit: 1, queuedLimit: -1 }));
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }))

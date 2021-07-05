@@ -244,14 +244,10 @@ exports.getName = async (bookingArray) => {
             for (let j = 0; j < arrayOfParkinglot.length; j++) {
                 for (let k = 0; k < arrayOfParkinglot[j].area.length; k++) {
                     for (let z = 0; z < arrayOfUser.length; z++) {
-                        if (bookingArray[i].parkinglotID == arrayOfParkinglot[j]._id) {
+                        if (bookingArray[i].parkinglotID == arrayOfParkinglot[j]._id && bookingArray[i].userID == arrayOfUser[z]._id && bookingArray[i].areaName == arrayOfParkinglot[j].area[k].name) {
                             bookingArray[i].parkinglotName = arrayOfParkinglot[j].name;
                             bookingArray[i].parkinglotAddress = arrayOfParkinglot[j].address;
-                        }
-                        if (bookingArray[i].userID == arrayOfUser[z]._id) {
                             bookingArray[i].userName = arrayOfUser[z].name;
-                        }
-                        if (bookingArray[i].areaName == arrayOfParkinglot[j].area[k].name) {
                             bookingArray[i].price = arrayOfParkinglot[j].area[k].price;
                         }
                     }
