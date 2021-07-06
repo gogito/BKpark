@@ -71,7 +71,7 @@ exports.unbook_slot = async (bookingID) => {
         for (let i = 0; i < data.area.length; i++) {
 
             if (data.area[i].name == areaName) {
-              
+
                 data.area[i].slots[slot_id] = 0;
                 data.area[i].fullslot -= 1;
                 data.area[i].freeslot += 1;
@@ -237,13 +237,17 @@ exports.getName = async (bookingArray) => {
     var promise2 = User.find({ _id: { $in: userIDArray } }).exec();
 
     await Promise.all([promise1, promise2]).then(function (value) {
-        // let count = 0;
+        console.log("Called");
         let arrayOfParkinglot = value[0];
         let arrayOfUser = value[1];
         for (let i = 0; i < bookingArray.length; i++) {
+            let flag = 0;
             for (let j = 0; j < arrayOfParkinglot.length; j++) {
+                if (flag == 1) { break; }
                 for (let k = 0; k < arrayOfParkinglot[j].area.length; k++) {
+                    if (flag == 1) { break; }
                     for (let z = 0; z < arrayOfUser.length; z++) {
+                        if (flag == 1) { break; }
                         if (bookingArray[i].parkinglotID == arrayOfParkinglot[j]._id && bookingArray[i].userID == arrayOfUser[z]._id && bookingArray[i].areaName == arrayOfParkinglot[j].area[k].name) {
                             bookingArray[i].parkinglotName = arrayOfParkinglot[j].name;
                             bookingArray[i].parkinglotAddress = arrayOfParkinglot[j].address;
@@ -251,9 +255,14 @@ exports.getName = async (bookingArray) => {
                             bookingArray[i].price = arrayOfParkinglot[j].area[k].price;
                             // console.log(count);
                             // count++;
+                            flag = 1;
+
                         }
+
                     }
+
                 }
+
             }
         }
 
@@ -421,7 +430,7 @@ exports.cancel_booking = async (bookingID) => {
     let check_unbook = await this.unbook_slot(bookingID);
 
     if (check_unbook) {
-   
+
         await Booking.findOneAndUpdate({ _id: bookingID },
             { $set: { "status": "Failed" } }, { new: true })
 
