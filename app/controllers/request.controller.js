@@ -43,8 +43,8 @@ exports.getCountFast = async (req, res) => {
             )
         }
         for (let i = 0; i < request_array.length; i++) {
-            let u = total_parkinglot_array.findIndex(element => element.parkinglotID == request_array[i].parkinglotID);
-            total_parkinglot_array[u].count = total_parkinglot_array[u].count + 1;
+            // let u = total_parkinglot_array.findIndex(element => element.parkinglotID == request_array[i].parkinglotID);
+            total_parkinglot_array[total_parkinglot_array.findIndex(element => element.parkinglotID == request_array[i].parkinglotID)].count += 1;
             let e = total_edge_id_array.findIndex(element => element.edge_id == request_array[i].edge_id);
             if (e == -1) {
                 total_edge_id_array.push(
@@ -55,7 +55,7 @@ exports.getCountFast = async (req, res) => {
                 )
             }
             else {
-                total_edge_id_array[e].count = total_edge_id_array[e].count + 1;
+                total_edge_id_array[e].count += 1;
             }
         }
         res.send(
