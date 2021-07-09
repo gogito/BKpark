@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 const queue = require('express-queue');
+
 // create express app
 const app = express();
 
@@ -97,12 +98,3 @@ require('./app/routes/request.routes.js')(app);
 app.listen(3002, () => {
     console.log("BKPark Server is listening on port 3002");
 });
-
-
-// app.getConnections(function(error, count) {
-
-//     console.log(count);
-
-// });
-
-

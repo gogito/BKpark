@@ -1,7 +1,8 @@
 module.exports = (app) => {
     const bookings = require('../controllers/booking.controller.js');
     const rateLimit = require("express-rate-limit");
-    const queue = require('express-queue');
+   const queue = require('./share.js')
+    // const queue = require('express-queue');
     // const bookingLimiter = rateLimit({
     //     windowMs: 5*1000, // 5 minutes window
     //     max: 1, // start blocking after 5 requests
@@ -107,7 +108,7 @@ module.exports = (app) => {
      */
 
 
-    app.get('/bookings/:bookingId', bookings.findOne);
+    app.get('/bookings/:bookingId', queue({ activeLimit: 1, queuedLimit: -1 }), bookings.findOne);
 
     // Add new Booking
 
@@ -171,7 +172,7 @@ module.exports = (app) => {
      */
 
 
-    app.delete('/bookings/:bookingID',queue({ activeLimit: 1, queuedLimit: -1 }), bookings.delete);
+    app.delete('/bookings/:bookingID', queue({ activeLimit: 1, queuedLimit: -1 }), bookings.delete);
 
     // Complete Booking
 
@@ -200,7 +201,7 @@ module.exports = (app) => {
      */
 
 
-    app.put('/bookings/:bookingID', queue({ activeLimit: 1, queuedLimit: -1 }),bookings.put);
+    app.put('/bookings/:bookingID', queue({ activeLimit: 1, queuedLimit: -1 }), bookings.put);
 
 
     // Retrieve all CURRENT Bookings

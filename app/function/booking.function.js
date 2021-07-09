@@ -60,75 +60,75 @@ exports.unbook_slot = async (bookingID) => {
 
     booking_data = await Booking.findById(bookingID);
 
-    if (booking_data.status == "Booked") {
 
-        let parkingID = booking_data.parkinglotID;
-        let areaName = booking_data.areaName;
-        let slot_id = booking_data.slot_id;
 
-        data = await ParkingLot.findById(parkingID).lean();
+    let parkingID = booking_data.parkinglotID;
+    let areaName = booking_data.areaName;
+    let slot_id = booking_data.slot_id;
 
-        for (let i = 0; i < data.area.length; i++) {
+    data = await ParkingLot.findById(parkingID).lean();
 
-            if (data.area[i].name == areaName) {
+    for (let i = 0; i < data.area.length; i++) {
 
-                data.area[i].slots[slot_id] = 0;
-                data.area[i].fullslot -= 1;
-                data.area[i].freeslot += 1;
+        if (data.area[i].name == areaName) {
 
-                await ParkingLot.findOneAndUpdate({ _id: parkingID },
-                    { $set: { "area": data.area } }, { new: true })
-                    .then(parking => {
-                        if (!parking) {
-                            return res.status(404).send({
-                                message: "Parking Lot not found with id " + req.params.parkingId
-                            });
-                        }
+            data.area[i].slots[slot_id] = 0;
+            data.area[i].fullslot -= 1;
+            data.area[i].freeslot += 1;
 
-                    }).catch(err => {
-                        if (err.kind === 'ObjectId') {
-                            return res.status(404).send({
-                                message: "Parking Lot not found with id " + req.params.parkingId
-                            });
-                        }
-                        return res.status(500).send({
-                            message: "Error updating Parking Lot with id " + req.params.parkingId
+            await ParkingLot.findOneAndUpdate({ _id: parkingID },
+                { $set: { "area": data.area } }, { new: true })
+                .then(parking => {
+                    if (!parking) {
+                        return res.status(404).send({
+                            message: "Parking Lot not found with id " + req.params.parkingId
                         });
-                    });
+                    }
 
-                const result = await plfunc.cal_status_func(parkingID)
-
-                content = {
-                    $set: { "status": result }
-                }
-
-                ParkingLot.findOneAndUpdate({ _id: parkingID },
-                    content, { new: true })
-                    .then(parkinglot => {
-                        if (!parkinglot) {
-                            return res.status(404).send({
-                                message: "Parking Lot not found with id " + parkingID
-                            });
-                        }
-
-
-                    }).catch(err => {
-                        if (err.kind === 'ObjectId') {
-                            return res.status(404).send({
-                                message: "Parking Lot not found with id " + parkingID
-                            });
-                        }
-                        return res.status(500).send({
-                            message: "Error updating Parking Lot with id " + parkingID
+                }).catch(err => {
+                    if (err.kind === 'ObjectId') {
+                        return res.status(404).send({
+                            message: "Parking Lot not found with id " + req.params.parkingId
                         });
+                    }
+                    return res.status(500).send({
+                        message: "Error updating Parking Lot with id " + req.params.parkingId
                     });
-                return true;
+                });
 
+            const result = await plfunc.cal_status_func(parkingID)
+
+            content = {
+                $set: { "status": result }
             }
+
+            ParkingLot.findOneAndUpdate({ _id: parkingID },
+                content, { new: true })
+                .then(parkinglot => {
+                    if (!parkinglot) {
+                        return res.status(404).send({
+                            message: "Parking Lot not found with id " + parkingID
+                        });
+                    }
+
+
+                }).catch(err => {
+                    if (err.kind === 'ObjectId') {
+                        return res.status(404).send({
+                            message: "Parking Lot not found with id " + parkingID
+                        });
+                    }
+                    return res.status(500).send({
+                        message: "Error updating Parking Lot with id " + parkingID
+                    });
+                });
+            return true;
 
         }
 
     }
+
+
 
 }
 
@@ -239,30 +239,43 @@ exports.getName = async (bookingArray) => {
     await Promise.all([promise1, promise2]).then(function (value) {
         let arrayOfParkinglot = value[0];
         let arrayOfUser = value[1];
+        // let count = 0;
+        // for (let i = 0; i < bookingArray.length; i++) {
+        //     let flag = 0;
+        //     for (let j = 0; j < arrayOfParkinglot.length; j++) {
+        //         if (flag == 1) { break; }
+        //         for (let k = 0; k < arrayOfParkinglot[j].area.length; k++) {
+        //             if (flag == 1) { break; }
+        //             for (let z = 0; z < arrayOfUser.length; z++) {
+        //                 if (flag == 1) { break; }
+        //                 if (bookingArray[i].parkinglotID == arrayOfParkinglot[j]._id && bookingArray[i].userID == arrayOfUser[z]._id && bookingArray[i].areaName == arrayOfParkinglot[j].area[k].name) {
+        //                     bookingArray[i].parkinglotName = arrayOfParkinglot[j].name;
+        //                     bookingArray[i].parkinglotAddress = arrayOfParkinglot[j].address;
+        //                     bookingArray[i].userName = arrayOfUser[z].name;
+        //                     bookingArray[i].price = arrayOfParkinglot[j].area[k].price;
+        //                     // console.log(count);
+        //                     // count++;
+        //                     flag = 1;
+
+        //                 }
+
+        //             }
+
+        //         }
+
+        //     }
+        // }
         for (let i = 0; i < bookingArray.length; i++) {
-            let flag = 0;
-            for (let j = 0; j < arrayOfParkinglot.length; j++) {
-                if (flag == 1) { break; }
-                for (let k = 0; k < arrayOfParkinglot[j].area.length; k++) {
-                    if (flag == 1) { break; }
-                    for (let z = 0; z < arrayOfUser.length; z++) {
-                        if (flag == 1) { break; }
-                        if (bookingArray[i].parkinglotID == arrayOfParkinglot[j]._id && bookingArray[i].userID == arrayOfUser[z]._id && bookingArray[i].areaName == arrayOfParkinglot[j].area[k].name) {
-                            bookingArray[i].parkinglotName = arrayOfParkinglot[j].name;
-                            bookingArray[i].parkinglotAddress = arrayOfParkinglot[j].address;
-                            bookingArray[i].userName = arrayOfUser[z].name;
-                            bookingArray[i].price = arrayOfParkinglot[j].area[k].price;
-                            // console.log(count);
-                            // count++;
-                            flag = 1;
+            // bookingArray[i].parkinglotID == arrayOfParkinglot[j]._id && bookingArray[i].userID == arrayOfUser[z]._id && bookingArray[i].areaName == arrayOfParkinglot[j].area[k].name
 
-                        }
+            let found_parkinglot = arrayOfParkinglot.find(element => element._id == bookingArray[i].parkinglotID)
+            let found_user = arrayOfUser.find(element => element._id == bookingArray[i].userID)
+            let found_area = found_parkinglot.area.find(element => element.name == bookingArray[i].areaName)
 
-                    }
-
-                }
-
-            }
+            bookingArray[i].parkinglotName = found_parkinglot.name;
+            bookingArray[i].parkinglotAddress = found_parkinglot.address;
+            bookingArray[i].userName = found_user.name;
+            bookingArray[i].price = found_area.price;
         }
 
     });

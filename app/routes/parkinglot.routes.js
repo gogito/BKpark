@@ -1,7 +1,7 @@
 module.exports = (app) => {
     const parkinglots = require('../controllers/parkinglot.controller.js');
     const cal_coor = require('../function/coordinate.function.js');
-
+    const queue = require('./share.js')
         /**
      * @swagger
      * components:
@@ -437,7 +437,7 @@ app.delete('/parkinglots/:parkingId', parkinglots.delete_for_owner);
  */
 
 
- app.put('/parkinglots/:parkingId/area/slot', parkinglots.updateAreaSlot);
+ app.put('/parkinglots/:parkingId/area/slot', queue({ activeLimit: 1, queuedLimit: -1 }), parkinglots.updateAreaSlot);
 
     // Add area in a Parkinglot with ParkingId
 
