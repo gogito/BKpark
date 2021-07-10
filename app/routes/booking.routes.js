@@ -108,7 +108,7 @@ module.exports = (app) => {
      */
 
 
-    app.get('/bookings/:bookingId', queue({ activeLimit: 1, queuedLimit: -1 }), bookings.findOne);
+    app.get('/bookings/:bookingId', bookings.findOne);
 
     // Add new Booking
 

@@ -3,6 +3,10 @@ const User = require('../models/user.model.js');
 const Booking = require('../models/booking.model.js');
 const parkinglot = require('../controllers/parkinglot.controller.js');
 const plfunc = require('../function/parkinglots.function.js');
+// const worker_module = require("../worker/booking_worker")
+const { Worker } = require("worker_threads");
+
+
 exports.check_avail = async (parkingID, areaName) => {
 
     var data;
@@ -222,6 +226,74 @@ exports.check_currentBooking = async (userID) => {
 
 exports.getName = async (bookingArray) => {
 
+    // var completeArray = [1];
+    // let parkinglotIDArray = [];
+    // let userIDArray = [];
+    // let areaArray = [];
+
+    // for (let i = 0; i < bookingArray.length; i++) {
+
+    //     parkinglotIDArray.push(bookingArray[i].parkinglotID);
+    //     userIDArray.push(bookingArray[i].userID);
+    //     areaArray.push(bookingArray[i].areaName);
+    // }
+
+    // var promise1 = ParkingLot.find({ _id: { $in: parkinglotIDArray } }).lean().exec();
+    // var promise2 = User.find({ _id: { $in: userIDArray } }).lean().exec();
+
+    // return await Promise.all([promise1, promise2]).then(function (value) {
+    //     // console.log(value[0][0])
+    // for (let i = 0; i < value[0].length; i++) {
+    //     value[0][i]._id = value[0][i]._id.toString();
+
+    // }
+
+    // for (let i = 0; i < bookingArray.length; i++) {
+    //     bookingArray[i]._id = bookingArray[i]._id.toString();
+
+    // }
+
+    // for (let i = 0; i < value[1].length; i++) {
+    //     value[1][i]._id = value[1][i]._id.toString();
+
+    // }
+
+    //     const worker = new Worker("../BKPark/app/worker/booking_worker.js", {
+    //         workerData: {
+    //             booking_array: bookingArray,
+    //             parkinglot_array: value[0],
+    //             user_array: value[1]
+    //         }
+    //     });
+
+    //     return new Promise(function(resolve, reject) {
+    //         worker.on("message", result => {
+    //             console.log(result.parking);
+    //             bookingArray = result.booking;
+    //             arrayOfParkinglot = result.parking;
+    //             arrayOfUser = result.user;
+
+    //             for (let i = 0; i < bookingArray.length; i++) {
+
+    //                 let found_parkinglot = arrayOfParkinglot.find(element => element._id == bookingArray[i].parkinglotID)
+    //                 let found_user = arrayOfUser.find(element => element._id == bookingArray[i].userID)
+    //                 let found_area = found_parkinglot.area.find(element => element.name == bookingArray[i].areaName)
+
+    //                 bookingArray[i].parkinglotName = found_parkinglot.name;
+    //                 bookingArray[i].parkinglotAddress = found_parkinglot.address;
+    //                 bookingArray[i].userName = found_user.name;
+    //                 bookingArray[i].price = found_area.price;
+    //             }
+
+    //             resolve(bookingArray)
+    //         });
+    //     });
+
+    // });
+
+
+
+
     var completeArray;
     let parkinglotIDArray = [];
     let userIDArray = [];
@@ -236,37 +308,13 @@ exports.getName = async (bookingArray) => {
     var promise1 = ParkingLot.find({ _id: { $in: parkinglotIDArray } }).exec();
     var promise2 = User.find({ _id: { $in: userIDArray } }).exec();
 
-    await Promise.all([promise1, promise2]).then(function (value) {
-        let arrayOfParkinglot = value[0];
-        let arrayOfUser = value[1];
-        // let count = 0;
-        // for (let i = 0; i < bookingArray.length; i++) {
-        //     let flag = 0;
-        //     for (let j = 0; j < arrayOfParkinglot.length; j++) {
-        //         if (flag == 1) { break; }
-        //         for (let k = 0; k < arrayOfParkinglot[j].area.length; k++) {
-        //             if (flag == 1) { break; }
-        //             for (let z = 0; z < arrayOfUser.length; z++) {
-        //                 if (flag == 1) { break; }
-        //                 if (bookingArray[i].parkinglotID == arrayOfParkinglot[j]._id && bookingArray[i].userID == arrayOfUser[z]._id && bookingArray[i].areaName == arrayOfParkinglot[j].area[k].name) {
-        //                     bookingArray[i].parkinglotName = arrayOfParkinglot[j].name;
-        //                     bookingArray[i].parkinglotAddress = arrayOfParkinglot[j].address;
-        //                     bookingArray[i].userName = arrayOfUser[z].name;
-        //                     bookingArray[i].price = arrayOfParkinglot[j].area[k].price;
-        //                     // console.log(count);
-        //                     // count++;
-        //                     flag = 1;
+    return await Promise.all([promise1, promise2]).then(function (value) {
 
-        //                 }
+        bookingArray = JSON.parse(JSON.stringify(bookingArray)) 
+        let arrayOfParkinglot = JSON.parse(JSON.stringify(value[0]));
+        let arrayOfUser = JSON.parse(JSON.stringify(value[1]));
 
-        //             }
-
-        //         }
-
-        //     }
-        // }
         for (let i = 0; i < bookingArray.length; i++) {
-            // bookingArray[i].parkinglotID == arrayOfParkinglot[j]._id && bookingArray[i].userID == arrayOfUser[z]._id && bookingArray[i].areaName == arrayOfParkinglot[j].area[k].name
 
             let found_parkinglot = arrayOfParkinglot.find(element => element._id == bookingArray[i].parkinglotID)
             let found_user = arrayOfUser.find(element => element._id == bookingArray[i].userID)
@@ -277,12 +325,9 @@ exports.getName = async (bookingArray) => {
             bookingArray[i].userName = found_user.name;
             bookingArray[i].price = found_area.price;
         }
-
+        return bookingArray;
     });
 
-    completeArray = bookingArray;
-
-    return completeArray;
 }
 
 exports.findBookingByParking = async (parkingID) => {

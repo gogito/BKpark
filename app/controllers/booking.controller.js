@@ -4,6 +4,9 @@ const User = require('../models/user.model.js');
 const Parkinglot = require('../models/parkinglot.model.js');
 const plfunc = require('../function/parkinglots.function.js');
 
+
+
+
 // Create and Save a new Booking
 exports.create = (req, res) => {
     let time = bookingfunc.getTime();
@@ -121,8 +124,6 @@ exports.create = (req, res) => {
 
 // Retrieve and return all Booking from the database.
 exports.findAll = async (req, res) => {
-
-
     let bookingArray = await Booking.find().lean();
     let finalArray = await bookingfunc.getName(bookingArray);
     res.send(finalArray);
