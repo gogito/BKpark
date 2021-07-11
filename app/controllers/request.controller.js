@@ -28,7 +28,7 @@ exports.getTotal = (req, res) => {
 exports.getCountFast = async (req, res) => {
     var total_edge_id_array = [];
     var total_parkinglot_array = [];
-    var promise1 = Request.find({}, { slots: 0, areaName: 0 }).lean().exec();
+    var promise1 = Request.find({}, { slots: 0, areaName: 0, time: 0, _id: 0 }).lean().exec();
     var promise2 = Parkinglot.find({}, { name: 1 }).lean().exec();
     await Promise.all([promise1, promise2]).then(function (value) {
 
@@ -45,7 +45,6 @@ exports.getCountFast = async (req, res) => {
             )
         }
         for (let i = 0; i < request_array.length; i++) {
-            // let u = total_parkinglot_array.findIndex(element => element.parkinglotID == request_array[i].parkinglotID);
             total_parkinglot_array[total_parkinglot_array.findIndex(element => element.parkinglotID == request_array[i].parkinglotID)].count += 1;
             let e = total_edge_id_array.findIndex(element => element.edge_id == request_array[i].edge_id);
             if (e == -1) {

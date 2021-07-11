@@ -305,8 +305,8 @@ exports.getName = async (bookingArray) => {
         areaArray.push(bookingArray[i].areaName);
     }
 
-    var promise1 = ParkingLot.find({ _id: { $in: parkinglotIDArray } }).exec();
-    var promise2 = User.find({ _id: { $in: userIDArray } }).exec();
+    var promise1 = ParkingLot.find({ _id: { $in: parkinglotIDArray } }, {name: 1, address: 1, area: 1}).exec();
+    var promise2 = User.find({ _id: { $in: userIDArray } }, {name: 1}).exec();
 
     return await Promise.all([promise1, promise2]).then(function (value) {
 
