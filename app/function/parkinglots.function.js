@@ -26,7 +26,7 @@ exports.cal_status_func = async (id) => {
 }
 
 
-exports.cal_single_slot_func = (array, name, price) => {
+exports.cal_single_slot_func = (array, name, price, coordinate_array) => {
 
     var fullslot = 0;
     var freeslot = 0;
@@ -47,7 +47,9 @@ exports.cal_single_slot_func = (array, name, price) => {
         slots: array,
         price: price,
         fullslot: fullslot,
-        freeslot: freeslot
+        freeslot: freeslot,
+        coordinate_array: coordinate_array
+
     };
     return resultObject;
 
@@ -63,7 +65,7 @@ exports.cal_slot_func = async (id) => {
 
     data.area.forEach(Melement => {
 
-        const result = this.cal_single_slot_func(Melement.slots, Melement.name, Melement.price);
+        const result = this.cal_single_slot_func(Melement.slots, Melement.name, Melement.price, Melement.coordinate_array);
         resultArray.push(result);
 
     }

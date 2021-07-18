@@ -439,6 +439,101 @@ app.delete('/parkinglots/:parkingId', parkinglots.delete_for_owner);
 
  app.put('/parkinglots/:parkingId/area/slot', queue({ activeLimit: 1, queuedLimit: -1 }), parkinglots.updateAreaSlot);
 
+
+     // Update area SLOT COORDINATE in a Parkinglot with ParkingId
+
+/**
+ * @swagger
+ * /parkinglots/{id}/area/slot/coordinate:
+ *   put:
+ *     summary: Update area SLOT COORDINATE in a Parkinglot with ParkingId
+ *     tags: [Parkinglots]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The Parkinglot id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             properties:
+ *                    area:
+ *                      type: object
+ *                      properties:
+ *                        name:
+ *                          type: string
+ *                        coordinate_array:
+ *                          type: array
+ *                          items:
+ *                            type: object
+ *                            properties:
+ *                              id:
+ *                                type: string
+ *                              point_array:
+ *                                type: array
+ *                                items:
+ *                                  type: integer
+ *                              
+ *      
+ *     responses:
+ *       200:
+ *         description: The Parkinglot description by id after update
+ *         contens:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Parkinglot'
+ *       404:
+ *         description: The Parkinglot was not found
+ */
+
+
+ app.put('/parkinglots/:parkingId/area/slot/coordinate', parkinglots.updateAreaSlotCoordinate);
+
+
+    // Get area SLOT COORDINATE in a Parkinglot with ParkingId
+
+/**
+ * @swagger
+ * /parkinglots/{id}/area/slot/coordinate/{areaName}:
+ *   get:
+ *     summary: Get area SLOT COORDINATE in a Parkinglot with ParkingId
+ *     tags: [Parkinglots]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The Parkinglot id
+  *       - in: path
+ *         name: areaName
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The area name
+ *  
+ *                              
+ *      
+ *     responses:
+ *       200:
+ *         description: The Parkinglot description by id after update
+ *         contens:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Parkinglot'
+ *       404:
+ *         description: The Parkinglot was not found
+ */
+
+
+ app.get('/parkinglots/:parkingId/area/slot/coordinate/:areaName', parkinglots.getAreaSlotCoordinate);
+
+
+
     // Add area in a Parkinglot with ParkingId
 
 /**

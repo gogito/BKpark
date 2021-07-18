@@ -358,7 +358,7 @@ exports.addArea = async (req, res) => {
 
 // Update area SLOT in a Parkinglot with ParkingId
 exports.updateAreaSlot = async (req, res) => {
-    // console.log(req.body);
+    console.log(req.body);
     let received_time = bookingfunc.getTimeMS();
 
      // Create a Request
@@ -474,6 +474,49 @@ exports.updateAreaSlot = async (req, res) => {
                 message: "Error updating Parking Lot with id " + req.params.parkingId
             });
         });
+};
+
+// Update area SLOT COORDINATE in a Parkinglot with ParkingId
+exports.updateAreaSlotCoordinate = async (req, res) => {
+    console.log(req.body.area.coordinate_array);
+
+
+    let content = {
+        $set: { "area.$.coordinate_array": req.body.area.coordinate_array }
+    }
+
+    await ParkingLot.findOneAndUpdate({ _id: req.params.parkingId, "area.name": req.body.area.name }, content, { new: true })
+        .then(parking => {
+            res.send(parking)
+
+            if (!parking) {
+                return res.status(404).send({
+                    message: "Parking Lot not found with id " + req.params.parkingId
+                });
+            }
+
+        }).catch(err => {
+            if (err.kind === 'ObjectId') {
+                return res.status(404).send({
+                    message: "Parking Lot not found with id " + req.params.parkingId
+                });
+            }
+            return res.status(500).send({
+                message: "Error updating Parking Lot with id " + req.params.parkingId
+            });
+        });
+
+
+};
+
+// Get area SLOT COORDINATE in a Parkinglot with ParkingId
+exports.getAreaSlotCoordinate = async (req, res) => {
+   let pl = await ParkingLot.findById(req.params.parkingId).lean().exec();
+   console.log(pl.area[pl.area.findIndex(element => element.name == req.params.areaName)].coordinate_array)
+   res.send(pl.area[pl.area.findIndex(element => element.name == req.params.areaName)].coordinate_array);
+        
+           
+       
 };
 
 // Delete Area in Parkinglot
