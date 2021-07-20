@@ -363,8 +363,6 @@ exports.updateAreaSlot = async (req, res) => {
     if (found_index == -1 ||
         (global_request_array[found_index].edge_id == req.body.edge_id &&
             (parseFloat(req.body.time.sent) >= global_request_array[found_index].time_sent))) {
-        console.log("Previous")
-        console.log(global_request_array[found_index])
         console.log("Received")
         console.log(req.body);
         console.log("-------------------------------");
@@ -504,8 +502,6 @@ exports.updateAreaSlot = async (req, res) => {
         }
     }
     else {
-        console.log("Previous")
-        console.log(global_request_array[found_index])
         console.log("Stale")
         console.log(req.body)
         console.log("-------------------------------");
