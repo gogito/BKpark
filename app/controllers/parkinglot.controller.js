@@ -4,6 +4,7 @@ const bookingfunc = require('../function/booking.function.js');
 const Owner = require('../models/owner.model.js');
 const Booking = require('../models/booking.model.js');
 const Request = require('../models/request.model.js');
+var global_request_array = [];
 // Create and Save a new ParkingLot
 exports.create = (req, res) => {
     // Validate request
@@ -358,122 +359,160 @@ exports.addArea = async (req, res) => {
 
 // Update area SLOT in a Parkinglot with ParkingId
 exports.updateAreaSlot = async (req, res) => {
-    console.log(req.body);
-    let received_time = bookingfunc.getTimeMS();
+    const found_index = global_request_array.findIndex(element => element.edge_id == req.body.edge_id)
+    if (found_index == -1 ||
+        (global_request_array[found_index].edge_id == req.body.edge_id &&
+            (parseFloat(req.body.time.sent) >= global_request_array[found_index].time_sent))) {
+        console.log("Previous")
+        console.log(global_request_array[found_index])
+        console.log("Received")
+        console.log(req.body);
+        console.log("-------------------------------");
+        let received_time = bookingfunc.getTimeMS();
 
-     // Create a Request
-     const request = new Request({
-        edge_id: req.body.edge_id,
-        parkinglotID: req.params.parkingId, 
-        time: {
-            sent: req.body.time.sent,
-            received: received_time
-        },
-        areaName: req.body.area.name,
-        slots: req.body.area.slots
-    });
-    // console.log(request);
-    // Save Request in the database
-    request.save().catch(err => {
+        // Create a Request
+        const request = new Request({
+            edge_id: req.body.edge_id,
+            parkinglotID: req.params.parkingId,
+            time: {
+                sent: req.body.time.sent,
+                received: received_time
+            },
+            areaName: req.body.area.name,
+            slots: req.body.area.slots
+        });
+        // console.log(request);
+        // Save Request in the database
+        request.save().catch(err => {
             res.status(500).send({
                 message: err.message || "Some error occurred while creating the Request."
             });
         });
-        
 
 
-    for (i = 0; i < req.body.area.slots.length; i++) {
-        if (req.body.area.slots[i] < 0.5) {
-            req.body.area.slots[i] = 0;
+
+        for (i = 0; i < req.body.area.slots.length; i++) {
+            if (req.body.area.slots[i] < 0.5) {
+                req.body.area.slots[i] = 0;
+            }
+            else {
+                req.body.area.slots[i] = 1;
+            }
+        }
+
+
+        let slot_content = await plfunc.check_slot_single(req.body, req.params.parkingId);
+        let content = {
+            $set: { "area.$.slots": slot_content.area.slots }
+        }
+
+        await ParkingLot.findOneAndUpdate({ _id: req.params.parkingId, "area.name": slot_content.area.name }, content, { new: true })
+            .then(parking => {
+
+                if (!parking) {
+                    return res.status(404).send({
+                        message: "Parking Lot not found with id " + req.params.parkingId
+                    });
+                }
+
+            }).catch(err => {
+                if (err.kind === 'ObjectId') {
+                    return res.status(404).send({
+                        message: "Parking Lot not found with id " + req.params.parkingId
+                    });
+                }
+                return res.status(500).send({
+                    message: "Error updating Parking Lot with id " + req.params.parkingId
+                });
+            });
+
+
+        var slotResult = await plfunc.cal_slot_id_func(req.params.parkingId)
+        slotResult = '[' + slotResult + ']';
+
+        const jsonResult = JSON.parse(slotResult);
+
+        content = {
+            $set: { "area": jsonResult }
+        }
+
+        await ParkingLot.findOneAndUpdate({ _id: req.params.parkingId },
+            content, { new: true })
+            .then(parkinglot => {
+                if (!parkinglot) {
+                    return res.status(404).send({
+                        message: "Parking Lot not found with id " + req.params.parkingId
+                    });
+                }
+            }).catch(err => {
+                if (err.kind === 'ObjectId') {
+                    return res.status(404).send({
+                        message: "Parking Lot not found with id " + req.params.parkingId
+                    });
+                }
+                return res.status(500).send({
+                    message: "Error updating Parking Lot with id " + req.params.parkingId
+                });
+            });
+
+
+
+        const result = await plfunc.cal_status_func(req.params.parkingId)
+
+        content = {
+            $set: { "status": result }
+        }
+
+        global_request_array.push(
+            // {
+            //     "edge_id": req.body.edge_id,
+            //     "time_sent": req.body.time.sent
+            // }
+        )
+
+        ParkingLot.findOneAndUpdate({ _id: req.params.parkingId },
+            content, { new: true })
+            .then(parkinglot => {
+                if (!parkinglot) {
+                    return res.status(404).send({
+                        message: "Parking Lot not found with id " + req.params.parkingId
+                    });
+                }
+                res.send(parkinglot);
+
+            }).catch(err => {
+                if (err.kind === 'ObjectId') {
+                    return res.status(404).send({
+                        message: "Parking Lot not found with id " + req.params.parkingId
+                    });
+                }
+                return res.status(500).send({
+                    message: "Error updating Parking Lot with id " + req.params.parkingId
+                });
+            });
+        if (found_index == -1) {
+            global_request_array.push(
+                {
+                    edge_id: req.body.edge_id,
+                    time_sent: parseFloat(req.body.time.sent)
+                }
+            )
         }
         else {
-            req.body.area.slots[i] = 1;
+
+            global_request_array[found_index].time_sent = parseFloat(req.body.time.sent);
         }
     }
-
-
-    let slot_content = await plfunc.check_slot_single(req.body, req.params.parkingId);
-    let content = {
-        $set: { "area.$.slots": slot_content.area.slots }
+    else {
+        console.log("Previous")
+        console.log(global_request_array[found_index])
+        console.log("Stale")
+        console.log(req.body)
+        console.log("-------------------------------");
+        res.send({
+            message: "Stale Request"
+        })
     }
-
-    await ParkingLot.findOneAndUpdate({ _id: req.params.parkingId, "area.name": slot_content.area.name }, content, { new: true })
-        .then(parking => {
-
-            if (!parking) {
-                return res.status(404).send({
-                    message: "Parking Lot not found with id " + req.params.parkingId
-                });
-            }
-
-        }).catch(err => {
-            if (err.kind === 'ObjectId') {
-                return res.status(404).send({
-                    message: "Parking Lot not found with id " + req.params.parkingId
-                });
-            }
-            return res.status(500).send({
-                message: "Error updating Parking Lot with id " + req.params.parkingId
-            });
-        });
-
-
-    var slotResult = await plfunc.cal_slot_id_func(req.params.parkingId)
-    slotResult = '[' + slotResult + ']';
-
-    const jsonResult = JSON.parse(slotResult);
-
-    content = {
-        $set: { "area": jsonResult }
-    }
-
-    await ParkingLot.findOneAndUpdate({ _id: req.params.parkingId },
-        content, { new: true })
-        .then(parkinglot => {
-            if (!parkinglot) {
-                return res.status(404).send({
-                    message: "Parking Lot not found with id " + req.params.parkingId
-                });
-            }
-        }).catch(err => {
-            if (err.kind === 'ObjectId') {
-                return res.status(404).send({
-                    message: "Parking Lot not found with id " + req.params.parkingId
-                });
-            }
-            return res.status(500).send({
-                message: "Error updating Parking Lot with id " + req.params.parkingId
-            });
-        });
-
-
-
-    const result = await plfunc.cal_status_func(req.params.parkingId)
-
-    content = {
-        $set: { "status": result }
-    }
-
-    ParkingLot.findOneAndUpdate({ _id: req.params.parkingId },
-        content, { new: true })
-        .then(parkinglot => {
-            if (!parkinglot) {
-                return res.status(404).send({
-                    message: "Parking Lot not found with id " + req.params.parkingId
-                });
-            }
-            res.send(parkinglot);
-
-        }).catch(err => {
-            if (err.kind === 'ObjectId') {
-                return res.status(404).send({
-                    message: "Parking Lot not found with id " + req.params.parkingId
-                });
-            }
-            return res.status(500).send({
-                message: "Error updating Parking Lot with id " + req.params.parkingId
-            });
-        });
 };
 
 // Update area SLOT COORDINATE in a Parkinglot with ParkingId
@@ -511,12 +550,12 @@ exports.updateAreaSlotCoordinate = async (req, res) => {
 
 // Get area SLOT COORDINATE in a Parkinglot with ParkingId
 exports.getAreaSlotCoordinate = async (req, res) => {
-   let pl = await ParkingLot.findById(req.params.parkingId).lean().exec();
-   console.log(pl.area[pl.area.findIndex(element => element.name == req.params.areaName)].coordinate_array)
-   res.send(pl.area[pl.area.findIndex(element => element.name == req.params.areaName)].coordinate_array);
-        
-           
-       
+    let pl = await ParkingLot.findById(req.params.parkingId).lean().exec();
+    console.log(pl.area[pl.area.findIndex(element => element.name == req.params.areaName)].coordinate_array)
+    res.send(pl.area[pl.area.findIndex(element => element.name == req.params.areaName)].coordinate_array);
+
+
+
 };
 
 // Delete Area in Parkinglot
@@ -548,9 +587,9 @@ exports.deleteArea = async (req, res) => {
 // Chage Area Price in Parkinglot
 exports.changeAreaPrice = async (req, res) => {
 
-    await ParkingLot.updateOne({ _id: req.params.parkingId, "area.name": req.body.area.name }, 
-    { $set: { "area.$.price": req.body.area.price } }, 
-    { new: true })
+    await ParkingLot.updateOne({ _id: req.params.parkingId, "area.name": req.body.area.name },
+        { $set: { "area.$.price": req.body.area.price } },
+        { new: true })
 
     res.send({ message: "Changed Area Price" });
 };

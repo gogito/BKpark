@@ -1,7 +1,8 @@
 module.exports = (app) => {
     const bookings = require('../controllers/booking.controller.js');
     const rateLimit = require("express-rate-limit");
-   const queue = require('./share.js')
+    const queue = require('./share.js')
+
     // const queue = require('express-queue');
     // const bookingLimiter = rateLimit({
     //     windowMs: 5*1000, // 5 minutes window

@@ -64,8 +64,6 @@ exports.unbook_slot = async (bookingID) => {
 
     booking_data = await Booking.findById(bookingID);
 
-
-
     let parkingID = booking_data.parkinglotID;
     let areaName = booking_data.areaName;
     let slot_id = booking_data.slot_id;
