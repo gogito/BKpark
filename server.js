@@ -98,3 +98,5 @@ require('./app/routes/request.routes.js')(app);
 app.listen(3002, () => {
     console.log("BKPark Server is listening on port 3002");
 });
+
+// app.listen(process.env.PORT || 3002)
