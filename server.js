@@ -3,11 +3,13 @@ const bodyParser = require('body-parser');
 const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 const queue = require('express-queue');
+const requestCapture = require ('express-request-capture');
+var printAdapter = { channel: console};
 
 // create express app
 const app = express();
 
-app.use(queue({ activeLimit: 1, queuedLimit: -1 }));
+app.use(queue({ activeLimit: 1, queuedLimit: 999999999 }));
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -24,7 +26,7 @@ app.use(function (req, res, next) {
 
 // parse application/json
 app.use(bodyParser.json())
-
+// app.use(requestCapture(printAdapter));
 // Configuring the database
 const dbConfig = require('./config/database.config.js');
 const mongoose = require('mongoose');

@@ -363,9 +363,9 @@ exports.updateAreaSlot = async (req, res) => {
     if (found_index == -1 ||
         (global_request_array[found_index].edge_id == req.body.edge_id &&
             (parseFloat(req.body.time.sent) >= global_request_array[found_index].time_sent))) {
-        console.log("Received")
-        console.log(req.body);
-        console.log("-------------------------------");
+        // console.log("Received")
+        // console.log(req.body);
+        // console.log("-------------------------------");
         let received_time = bookingfunc.getTimeMS();
 
         // Create a Request
@@ -502,9 +502,9 @@ exports.updateAreaSlot = async (req, res) => {
         }
     }
     else {
-        console.log("Stale")
-        console.log(req.body)
-        console.log("-------------------------------");
+        // console.log("Stale")
+        // console.log(req.body)
+        // console.log("-------------------------------");
         res.send({
             message: "Stale Request"
         })
